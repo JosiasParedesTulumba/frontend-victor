@@ -1,0 +1,222 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Registrar Nuevo Vehículo</h5>
+      <button
+        type="button"
+        class="close-btn"
+        (click)="onClose()"
+        [disabled]="isLoading"
+      >
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Mensaje de error global -->
+      <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+        {{ errorMessage }}
+      </div>
+      <form [formGroup]="vehiculoForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <!-- Columna izquierda -->
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="modelo" class="form-label">Modelo</label>
+              <input
+                type="text"
+                class="form-control"
+                id="modelo"
+                formControlName="modelo"
+                placeholder="Ej. Toyota Corolla"
+                [class.is-invalid]="
+                  vehiculoForm.get('modelo')?.invalid &&
+                  vehiculoForm.get('modelo')?.touched
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  vehiculoForm.get('modelo')?.invalid &&
+                  vehiculoForm.get('modelo')?.touched
+                "
+              >
+                El modelo es requerido
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="anio" class="form-label">Año</label>
+              <input
+                type="number"
+                class="form-control"
+                id="anio"
+                formControlName="anio"
+                placeholder="Ej. 2022"
+                [class.is-invalid]="
+                  vehiculoForm.get('anio')?.invalid &&
+                  vehiculoForm.get('anio')?.touched
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  vehiculoForm.get('anio')?.invalid &&
+                  vehiculoForm.get('anio')?.touched
+                "
+              >
+                <span *ngIf="vehiculoForm.get('anio')?.errors?.['required']"
+                  >El año es requerido</span
+                >
+                <span
+                  *ngIf="vehiculoForm.get('anio')?.errors?.['min'] || vehiculoForm.get('anio')?.errors?.['max']"
+                >
+                  Año inválido
+                </span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="precio" class="form-label">Precio por Día</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="precio"
+                formControlName="precio"
+                placeholder="Ej. 500.00"
+                [class.is-invalid]="
+                  vehiculoForm.get('precio')?.invalid &&
+                  vehiculoForm.get('precio')?.touched
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  vehiculoForm.get('precio')?.invalid &&
+                  vehiculoForm.get('precio')?.touched
+                "
+              >
+                <span *ngIf="vehiculoForm.get('precio')?.errors?.['required']"
+                  >El precio es requerido</span
+                >
+                <span *ngIf="vehiculoForm.get('precio')?.errors?.['min']">
+                  El precio debe ser mayor a 0</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha -->
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="matricula" class="form-label">Matrícula</label>
+              <input
+                type="text"
+                class="form-control"
+                id="matricula"
+                formControlName="matricula"
+                placeholder="Ej. ABC1234"
+                [class.is-invalid]="
+                  vehiculoForm.get('matricula')?.invalid &&
+                  vehiculoForm.get('matricula')?.touched
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  vehiculoForm.get('matricula')?.invalid &&
+                  vehiculoForm.get('matricula')?.touched
+                "
+              >
+                La matrícula es requerida
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="tipo" class="form-label">Tipo Vehículo</label>
+              <div class="select-container">
+                <select
+                  class="form-select"
+                  id="tipo"
+                  formControlName="tipo"
+                  [class.is-invalid]="
+                    vehiculoForm.get('tipo')?.invalid &&
+                    vehiculoForm.get('tipo')?.touched
+                  "
+                >
+                  <option value="Seleccionar tipo">Seleccionar tipo</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="Camioneta">Camioneta</option>
+                  <option value="Van">Van</option>
+                </select>
+                <i class="bx bx-chevron-down select-arrow"></i>
+              </div>
+              <div
+                class="invalid-feedback d-block"
+                *ngIf="
+                  vehiculoForm.get('tipo')?.invalid &&
+                  vehiculoForm.get('tipo')?.touched
+                "
+              >
+                Debe seleccionar un tipo de vehículo
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="capacidad" class="form-label">Capacidad</label>
+              <input
+                type="number"
+                class="form-control"
+                id="capacidad"
+                formControlName="capacidad"
+                placeholder="Ej. 5"
+                [class.is-invalid]="
+                  vehiculoForm.get('capacidad')?.invalid &&
+                  vehiculoForm.get('capacidad')?.touched
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  vehiculoForm.get('capacidad')?.invalid &&
+                  vehiculoForm.get('capacidad')?.touched
+                "
+              >
+                <span
+                  *ngIf="vehiculoForm.get('capacidad')?.errors?.['required']"
+                  >La capacidad es requerida</span
+                >
+                <span *ngIf="vehiculoForm.get('capacidad')?.errors?.['min']"
+                  >La capacidad debe ser al menos 1</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onClose()"
+            [disabled]="isLoading"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success custom-btn"
+            [disabled]="isLoading || vehiculoForm.invalid"
+          >
+            <span *ngIf="isLoading">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Guardando...
+            </span>
+            <span *ngIf="!isLoading">Registrar Vehículo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

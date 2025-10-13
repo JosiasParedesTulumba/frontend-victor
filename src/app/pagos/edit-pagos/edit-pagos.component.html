@@ -1,0 +1,47 @@
+<div class="modal-overlay" *ngIf="">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Editar Pago</h5>
+      <button type="button" class="close-btn">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form-row">
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="clienteDNI" class="form-label">DNI Cliente:</label>
+              <input type="text" class="form-control" id="clienteDNI" formControlName="clienteDNI" [disabled]="true">
+            </div>
+            <div class="mb-3">
+              <label for="reservaId" class="form-label">N° Reserva:</label>
+              <input type="text" class="form-control" id="reservaId" formControlName="reservaId" [disabled]="true">
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="monto" class="form-label">Monto:</label>
+              <input type="number" class="form-control" id="monto" formControlName="monto" [disabled]="true">
+            </div>
+            <div class="mb-3">
+              <label for="metodoPago" class="form-label">Método de Pago:</label>
+              <select class="form-select" id="metodoPago" formControlName="metodoPago">
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-success custom-btn">
+            <i class="bx bx-save me-1"></i> Guardar Cambios
+          </button>
+        </div>
+        <div class="alert alert-danger mt-2"></div>
+      </form>
+    </div>
+  </div>
+</div>

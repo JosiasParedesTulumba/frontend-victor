@@ -1,0 +1,50 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-content">
+        <h5 class="modal-title">Registrar Nuevo Pago</h5>
+      </div>
+      <button type="button" class="close-btn" (click)="onClose()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="pagoForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="clienteDNI" class="form-label">Reserva a través del DNI Cliente</label>
+          <input type="text" class="form-control" id="clienteDNI" formControlName="clienteDNI"
+            placeholder="Ej. 12345678">
+        </div>
+        
+        <div class="form-group">
+          <label for="monto" class="form-label">Monto</label>
+          <input type="number" step="0.01" class="form-control" id="monto" formControlName="monto"
+            placeholder="Ej. 500.00">
+        </div>
+        
+        <div class="form-group">
+          <label for="metodoPago" class="form-label">Método de Pago</label>
+          <div class="select-container">
+            <select class="form-select" id="metodoPago" formControlName="metodoPago">
+              <option value="">Seleccionar método</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Depósito">Depósito</option>
+            </select>
+            <i class="bx bx-chevron-down select-arrow"></i>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+      <button type="button" class="btn btn-primary custom-btn" (click)="onSubmit()">
+        <i class="bx bx-receipt me-2"></i>
+        Guardar Pago
+      </button>
+    </div>
+  </div>
+</div>

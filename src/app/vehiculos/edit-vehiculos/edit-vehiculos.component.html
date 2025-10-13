@@ -1,0 +1,56 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Editar Vehículo</h5>
+      <button type="button" class="close-btn" (click)="onClose()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="vehiculoForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="modelo" class="form-label">Modelo:</label>
+              <input type="text" class="form-control" id="modelo" formControlName="modelo" placeholder="Ej. Toyota Corolla">
+            </div>
+            <div class="mb-3">
+              <label for="matricula" class="form-label">Matrícula:</label>
+              <input type="text" class="form-control" id="matricula" formControlName="matricula" [disabled]="true">
+            </div>
+            <div class="mb-3">
+              <label for="tipo" class="form-label">Tipo:</label>
+              <select class="form-select" id="tipo" formControlName="tipo">
+                <option value="Seleccionar tipo">Seleccionar tipo</option>
+                <option value="Sedan">Sedan</option>
+                <option value="Camioneta">Camioneta</option>
+                <option value="Van">Van</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="anio" class="form-label">Año:</label>
+              <input type="number" class="form-control" id="anio" formControlName="anio" placeholder="Ej. 2023">
+            </div>
+            <div class="mb-3">
+              <label for="precio" class="form-label">Precio:</label>
+              <input type="number" class="form-control" id="precio" formControlName="precio" placeholder="Ej. 100">
+            </div>
+            <div class="mb-3">
+              <label for="capacidad" class="form-label">Capacidad:</label>
+              <input type="number" class="form-control" id="capacidad" formControlName="capacidad" placeholder="Ej. 5">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+          <button type="submit" class="btn btn-success custom-btn">
+            <i class="bx bx-save me-1"></i> Guardar Cambios
+          </button>
+        </div>
+        <div *ngIf="mensajeError" class="alert alert-danger mt-2">{{ mensajeError }}</div>
+      </form>
+    </div>
+  </div>
+</div>

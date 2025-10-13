@@ -1,0 +1,57 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Registrar Nueva Reserva</h5>
+      <button type="button" class="close-btn" (click)="onClose()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="reservaForm">
+        <div class="form-row">
+          <!-- Columna izquierda -->
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="clienteDNI" class="form-label">Cliente por DNI:</label>
+              <input type="text" class="form-control" id="clienteDNI" formControlName="clienteDNI" 
+                     placeholder="Ej. 12345678">
+            </div>
+            
+            <div class="mb-3">
+              <label for="matricula" class="form-label">Matrícula de Vehículo a reservar:</label>
+              <input type="text" class="form-control" id="matricula" formControlName="matricula" 
+                     placeholder="Ej. ABC1234">
+            </div>
+          </div>
+          
+          <!-- Columna derecha -->
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="fechaInicio" class="form-label">Desde:</label>
+              <input type="date" class="form-control" id="fechaInicio" formControlName="fechaInicio">
+            </div>
+            
+            <div class="mb-3">
+              <label for="fechaFin" class="form-label">Hasta:</label>
+              <input type="date" class="form-control" id="fechaFin" formControlName="fechaFin">
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción:</label>
+          <textarea class="form-control" id="descripcion" formControlName="descripcion" 
+                    rows="3" placeholder="Ej. Por vacaciones"></textarea>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+      <!-- <button type="button" class="btn btn-success custom-btn" (click)="onSubmit()">
+        Registrar reserva
+      </button> -->
+    </div>
+  </div>
+</div>

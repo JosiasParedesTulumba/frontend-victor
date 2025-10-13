@@ -1,0 +1,108 @@
+<div class="reserva-rectangulo mx-3 mt-4 mb-3 shadow">
+  <div class="d-flex align-items-center gap-4 w-100">
+    <i class="bx bxs-filter-alt filtro-icono me-2"></i>
+    <h5 class="mb-0 fw-bold">Filtros</h5>
+    <div class="d-flex align-items-center gap-4 ms-auto">
+      <div class="d-flex align-items-center">
+        <label for="matricula" class="me-2 mb-0">Matricula:</label>
+        <input id="matricula" name="matricula" type="text" class="form-control" placeholder="Ej. ABC1234" style="width: 120px;" [(ngModel)]="filtroMatricula">
+      </div>
+      <div class="d-flex align-items-center">
+        <label for="estado" class="me-2 mb-0">Estado:</label>
+        <select id="estado" name="estado" class="form-select" style="width: 120px;" [(ngModel)]="filtroEstado">
+          <option value="">Todos</option>
+          <option value="Libre">Libre</option>
+          <option value="Ocupado">Ocupado</option>
+          <option value="Mantenimiento">Mantenimiento</option>
+        </select>
+      </div>
+      <div class="d-flex align-items-center">
+        <label for="anio" class="me-2 mb-0">Año:</label>
+        <select id="anio" name="anio" class="form-select" style="width: 100px;" [(ngModel)]="filtroAnio">
+          <option value="">Todos</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </select>
+      </div>
+      <div class="d-flex align-items-center">
+        <label for="tipo" class="me-2 mb-0">Tipo:</label>
+        <select id="tipo" name="tipo" class="form-select" style="width: 100px;" [(ngModel)]="filtroTipo">
+          <option value="">Todos</option>
+          <option value="Sedan">Sedan</option>
+          <option value="Camioneta">Camioneta</option>
+          <option value="Van">Van</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="contenedor-tabla shadow">
+  <!-- Header con título y botón dentro del contenedor -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bx bx-menu me-3" style="font-size: 2rem; color: #333;"></i>
+      <h3 class="mb-0 fw-bold text-dark">Vehículos</h3>
+    </div>
+    <button class="btn btn-success d-flex align-items-center custom-btn" (click)="openModal()">
+      <i class="bx bx-plus me-2"></i>
+      Agregar Vehículo
+    </button>
+  </div>
+
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>Matrícula</th>
+        <th>Año</th>
+        <th>Tipo</th>
+        <th>Precio</th>
+        <th>Capacidad</th>
+        <th>Estado_actual</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vehiculo of vehiculos">
+        <td class="text-center">{{ vehiculo.modelo }}</td>
+        <td class="text-center">{{ vehiculo.matricula }}</td>
+        <td class="text-center">{{ vehiculo.anio }}</td>
+        <td class="text-center">{{ vehiculo.tipo }}</td>
+        <td class="text-center">{{ vehiculo.precio }}</td>
+        <td class="text-center">{{ vehiculo.capacidad }}</td>
+        <td class="text-center">{{ vehiculo.estadoActual || '-' }}</td>
+        <td class="text-center">
+          <span [ngClass]="vehiculo.estado === 'Activo' ? 'text-success' : 'text-danger'">
+            {{ vehiculo.estado }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-link text-primary p-0 me-2" (click)="abrirModalEditar(vehiculo)" title="Editar">
+            <i class='bx bx-edit'></i>
+          </button>
+          <!--<button class="btn btn-link text-primary p-0 me-2" (click)="alternarEstado(vehiculo.matricula)" title="Cambiar estado">
+            <i class='bx bx-refresh'></i>
+          </button>
+          -->
+          <button class="btn btn-link text-danger p-0" (click)="eliminarVehiculo(vehiculo)" title="Eliminar">
+            <i class='bx bx-trash'></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal personalizado -->
+<app-new-vehiculo 
+  [isOpen]="isModalOpen"
+  (closeModal)="closeModal()">
+</app-new-vehiculo>
+<app-edit-vehiculos
+  [isOpen]="isEditModalOpen"
+  [vehiculo]="vehiculoEditando"
+  (closeModal)="cerrarModalEditar()">
+</app-edit-vehiculos>

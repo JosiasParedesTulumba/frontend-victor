@@ -1,0 +1,89 @@
+<div class="reserva-rectangulo mx-3 mt-4 mb-3 shadow">
+  <div class="d-flex align-items-center gap-4 w-100">
+    <i class="bx bxs-filter-alt filtro-icono me-2"></i>
+    <h5 class="mb-0 fw-bold">Filtros</h5>
+    <div class="d-flex align-items-center gap-4 ms-auto">
+      <div class="d-flex align-items-center">
+        <label for="dniCliente" class="me-2 mb-0">DNI:Cliente</label>
+        <input id="dniCliente" name="dniCliente" type="text" class="form-control" placeholder="Ej. ABC1234" style="width: 120px;" [(ngModel)]="filtroDniCliente">
+      </div>
+      <div class="d-flex align-items-center">
+        <label for="fecha" class="me-2 mb-0">Fecha</label>
+        <select id="fecha" name="fecha" class="form-select" style="width: 140px;" [(ngModel)]="filtroFecha">
+          <option value="">Todos</option>
+          <option value="12/05/2025">12/05/2025</option>
+          <option value="11/04/2024">11/04/2024</option>
+          <option value="10/03/2023">10/03/2023</option>
+        </select>
+      </div>
+      <div class="d-flex align-items-center">
+        <label for="metodo" class="me-2 mb-0">Metodo:</label>
+        <select id="metodo" name="metodo" class="form-select" style="width: 100px;" [(ngModel)]="filtroMetodo">
+          <option value="">Todos</option>
+          <option value="Tarjeta">Tarjeta</option>
+          <option value="Efectivo">Efectivo</option>
+          <option value="Transferencia">Transferencia</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <!-- Aquí puedes poner más contenido -->
+</div>
+
+<div class="contenedor-tabla shadow">
+  <!-- Header con título y botón dentro del contenedor -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bx bx-menu me-3" style="font-size: 2rem; color: #333;"></i>
+      <h3 class="mb-0 fw-bold text-dark">Pagos</h3>
+    </div>
+    <button class="btn btn-success d-flex align-items-center custom-btn" (click)="openModal()">
+      <i class="bx bx-plus me-2"></i>
+      Agregar Pago
+    </button>
+  </div>
+
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>N°_Reserva</th>
+        <th>Monto</th>
+        <th>Método</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pago of pagos; let i = index">
+        <td class="text-center">{{ pago.clienteDNI }}</td>
+        <td class="text-center">{{ pago.reservaId || '-' }}</td>
+        <td class="text-center">{{ pago.monto }}</td>
+        <td class="text-center">{{ pago.metodoPago }}</td>
+        <td class="text-center">{{ pago.fechaPago ? pago.fechaPago.split(' ')[0].replace(',', '') : '' }}</td>
+        <td class="text-center">Pagado</td>
+        <td class="text-center">
+          <button class="btn btn-link text-primary p-0 me-2" (click)="abrirModalEditar(pago)" title="Editar">
+            <i class='bx bx-edit'></i>
+          </button>
+          <button class="btn btn-link text-danger p-0" (click)="eliminarPago(i)" title="Eliminar">
+            <i class='bx bx-trash'></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal de nuevo pago -->
+<app-new-pagos 
+  [isOpen]="isModalOpen"
+  (closeModal)="closeModal()"
+>
+</app-new-pagos>
+<!-- <app-edit-pagos
+  [isOpen]="isEditModalOpen"
+  [pago]="pagoEditando"
+  (closeModal)="cerrarModalEditar()">
+</app-edit-pagos> -->

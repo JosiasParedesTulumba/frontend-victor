@@ -1,0 +1,68 @@
+<div class="login-container">
+  <div class="background-image"></div>
+  <div class="login-card">
+    <form (ngSubmit)="onSubmit()">
+      <!-- Icono de carro centrado arriba del input username -->
+      <div class="icon-container">
+        <!-- SVG de un carro (puedes cambiar el SVG si prefieres otro estilo) -->
+        <svg class="car-icon" viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="10" y="14" width="44" height="12" rx="2" fill="#000" stroke="#000" />
+          <circle cx="18" cy="28" r="4" fill="#ccc" stroke="#000" />
+          <circle cx="46" cy="28" r="4" fill="#ccc" stroke="#000" />
+          <rect x="20" y="10" width="24" height="6" rx="2" fill="#444" stroke="#000" />
+        </svg>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="error-message" *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center; padding: 10px; background: #ffe6e6; border: 1px solid #ff9999; border-radius: 5px;">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-group">
+        <input 
+          type="text" 
+          [(ngModel)]="username" 
+          name="username" 
+          placeholder="Username" 
+          class="form-control"
+          [disabled]="isLoading"
+          required />
+      </div>
+
+      <div class="form-group password-group">
+        <input 
+          [type]="hidePassword ? 'password' : 'text'" 
+          [(ngModel)]="password" 
+          name="password" 
+          placeholder="Password"
+          class="form-control"  
+          [disabled]="isLoading"
+          required />
+
+        <button type="button" class="toggle-password" (click)="togglePasswordVisibility()" 
+          [attr.aria-label]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+          <!-- Ícono de ojo tachado (contraseña oculta) -->
+          <svg *ngIf="hidePassword" class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+            </path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+
+          <!-- Ícono de ojo visible (contraseña mostrada) -->
+          <svg *ngIf="!hidePassword" class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+
+      <button type="submit" class="login-button" [disabled]="!username || !password || isLoading">
+        <span *ngIf="isLoading">Iniciando sesion...</span>
+        <span *ngIf="!isLoading">Iniciar Sesión</span>
+      </button>
+    </form>
+  </div>
+</div>

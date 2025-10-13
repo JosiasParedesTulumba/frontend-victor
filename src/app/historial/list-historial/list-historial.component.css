@@ -1,0 +1,149 @@
+/* Estilos para el botón personalizado */
+.custom-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.custom-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  color: white;
+}
+
+.custom-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.custom-btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Los estilos de la tabla están definidos en styles.css global */
+
+/* Ajustes específicos para la tabla de historial si son necesarios */
+
+/* Estilos para los botones de acción */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+/* Estilos para los badges de estado */
+.badge {
+  display: inline-block;
+  padding: 0.4em 0.65em;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  color: #fff; /* Asegura que el texto sea blanco por defecto */
+}
+
+/* Estilos específicos para cada tipo de badge */
+.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529 !important; /* Texto oscuro para mejor contraste */
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.bg-info {
+  background-color: #0dcaf0 !important;
+  color: #000 !important; /* Texto oscuro para mejor contraste */
+}
+
+.bg-dark {
+  background-color: #212529 !important;
+}
+
+.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+/* Estilos para la descripción truncada */
+.descripcion-truncada {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+/* Estilos para el mensaje de sin datos */
+.text-center.py-5 {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 3rem 1rem;
+  margin: 1rem 0;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 992px) {
+  .reserva-rectangulo {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem !important;
+  }
+  
+  .reserva-rectangulo > div {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .descripcion-truncada {
+    max-width: 150px;
+  }
+}
+
+/* Estilos para los botones de acción */
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: transparent;
+}
+
+.btn-outline-danger:hover {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* Asegurar que los iconos tengan el mismo tamaño */
+.bx {
+  font-size: 1.1rem;
+  vertical-align: middle;
+}

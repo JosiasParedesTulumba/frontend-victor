@@ -1,0 +1,137 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Editar Persona</h5>
+      <button type="button" class="close-btn" (click)="onClose()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Agregar (ngSubmit)="onSubmit()" -->
+      <form [formGroup]="personaForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="dni" class="form-label">DNI:</label>
+              <input type="text" class="form-control" id="dni" formControlName="dni">
+            </div>
+            <div class="mb-3">
+              <label for="direccion" class="form-label">Dirección:</label>
+              <input type="text" class="form-control" id="direccion" formControlName="direccion"
+                [class.is-invalid]="isFieldInvalid('direccion')">
+              <div class="text-danger small" *ngIf="isFieldInvalid('direccion')">
+                {{ getFieldError('direccion') }}
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="tipoPersona" class="form-label">Tipo Persona:</label>
+              <select class="form-select" id="tipoPersona" formControlName="tipoPersona">
+                <option value="Cliente">Cliente</option>
+                <option value="Empleado">Empleado</option>
+              </select>
+            </div>
+            <div *ngIf="esEmpleado">
+              <div class="mb-3">
+                <label for="rol" class="form-label">Rol:</label>
+                <!-- CORREGIDO: Usar roles desde API -->
+                <select class="form-select" id="rol" formControlName="rol"
+                  [class.is-invalid]="isFieldInvalid('rol')">
+                  <option value="">Seleccione un rol</option>
+                  <option *ngFor="let rol of roles" [value]="rol.rol_id">
+                    {{ rol.nombre_rol }}
+                  </option>
+                </select>
+                <div class="text-danger small" *ngIf="isFieldInvalid('rol')">
+                  {{ getFieldError('rol') }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="nombres" class="form-label">Nombres:</label>
+              <input type="text" class="form-control" id="nombres" formControlName="nombres"
+                [class.is-invalid]="isFieldInvalid('nombres')">
+              <div class="text-danger small" *ngIf="isFieldInvalid('nombres')">
+                {{ getFieldError('nombres') }}
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Telefono:</label>
+              <input type="text" class="form-control" id="telefono" formControlName="telefono"
+                [class.is-invalid]="isFieldInvalid('telefono')">
+              <div class="text-danger small" *ngIf="isFieldInvalid('telefono')">
+                {{ getFieldError('telefono') }}
+              </div>
+            </div>
+            <div *ngIf="esEmpleado">
+              <div class="mb-3">
+                <label for="nombreUsuario" class="form-label">Nombre de Usuario:</label>
+                <input type="text" class="form-control" id="nombreUsuario" formControlName="nombreUsuario">
+              </div>
+              <div class="mb-3">
+                <label for="contrasena" class="form-label">Contraseña:</label>
+                <small class="form-text text-muted d-block mb-1">Dejar vacío para mantener la actual</small>
+                <div class="input-group">
+                  <input [type]="mostrarContrasena ? 'text' : 'password'" 
+                    class="form-control" 
+                    id="contrasena" 
+                    formControlName="contrasena"
+                    placeholder="Nueva contraseña (opcional)">
+                  <button type="button" class="btn btn-outline-secondary" (click)="toggleMostrarContrasena()" tabindex="-1">
+                    <i class="bx" [ngClass]="mostrarContrasena ? 'bx-show' : 'bx-hide'"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="apellidos" class="form-label">Apellidos:</label>
+              <input type="text" class="form-control" id="apellidos" formControlName="apellidos"
+                [class.is-invalid]="isFieldInvalid('apellidos')">
+              <div class="text-danger small" *ngIf="isFieldInvalid('apellidos')">
+                {{ getFieldError('apellidos') }}
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="correo" class="form-label">Correo Electronico</label>
+              <input type="email" class="form-control" id="correo" formControlName="correo"
+                [class.is-invalid]="isFieldInvalid('correo')">
+              <div class="text-danger small" *ngIf="isFieldInvalid('correo')">
+                {{ getFieldError('correo') }}
+              </div>
+            </div>
+            <div *ngIf="esEmpleado">
+              <div class="mb-3">
+                <label for="puesto" class="form-label">Puesto:</label>
+                <input type="text" class="form-control" id="puesto" formControlName="puesto"
+                  [class.is-invalid]="isFieldInvalid('puesto')">
+                <div class="text-danger small" *ngIf="isFieldInvalid('puesto')">
+                  {{ getFieldError('puesto') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mostrar errores generales -->
+        <div *ngIf="errorMessage" class="alert alert-danger mt-2">
+          {{ errorMessage }}
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onClose()" [disabled]="isLoading">
+            Cancelar
+          </button>
+          <!-- Agregar type="submit" y disabled -->
+          <button type="submit" class="btn btn-success custom-btn" [disabled]="isLoading || personaForm.invalid">
+            <i class="bx bx-save me-1"></i>
+            <span *ngIf="isLoading">Actualizando...</span>
+            <span *ngIf="!isLoading">Guardar Cambios</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+.toggle-btn {
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(34,51,136,0.10);
+  color: #223388;
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 0.75rem 2.5rem;
+  border-radius: 10px;
+  transition: all 0.2s;
+  margin: 0 0.5rem;
+}
+.toggle-btn.selected {
+  background: linear-gradient(90deg, #223388 0%, #3a53c5 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(34,51,136,0.18);
+  transform: scale(1.04);
+}
+.toggle-btn:not(.selected):hover {
+  background: #f4f6fa;
+  color: #223388;
+  box-shadow: 0 2px 8px rgba(34,51,136,0.13);
+}

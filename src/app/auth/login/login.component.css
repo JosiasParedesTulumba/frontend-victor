@@ -1,0 +1,188 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/assets/fondo.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+    margin: 0 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #3f51b5;
+}
+
+.password-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #757575;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eye-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #1A237E 0%, #2270E8 52%, #1A237E 94%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(26, 35, 126, 0.09);
+}
+
+.login-button:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+}
+
+.login-button:hover {
+    filter: brightness(0.85);
+}
+
+.recover-password {
+    text-align: center;
+}
+
+.recover-password a {
+    color: #000;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.recover-password a:hover {
+    text-decoration: underline;
+}
+
+.icon-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: -38px;
+}
+
+.car-icon {
+    width: 80px;
+    height: 80px;
+    color: black;
+    stroke: black;
+    /* Hace que el icono sea negro */
+}
+
+@media (max-width: 900px) {
+    .login-card {
+        max-width: 80vw;
+    }
+
+    .car-icon {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+@media (max-width: 600px) {
+    .login-card {
+        padding: 24px 8px;
+        max-width: 96vw;
+    }
+
+    .car-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .icon-container {
+        margin-bottom: 16px;
+        margin-top: -8px;
+    }
+
+    .form-control {
+        font-size: 15px;
+        padding: 12px;
+    }
+
+    .login-button {
+        font-size: 15px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .login-card {
+        padding: 12px 2vw;
+    }
+
+    .car-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .form-control,
+    .login-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

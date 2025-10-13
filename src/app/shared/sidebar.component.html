@@ -1,0 +1,64 @@
+<div class="sidebar-container" [class.collapsed]="isCollapsed">
+    <!-- Header -->
+    <div class="sidebar-header d-flex align-items-center justify-content-between p-3 border-bottom">
+        <div class="sidebar-brand" [class.d-none]="isCollapsed">
+            <div class="d-flex align-items-center">
+                <div class="brand-icon bg-primary rounded me-2 d-flex align-items-center justify-content-center">
+                    <i class='bx bx-grid-alt text-white'></i>
+                </div>
+                <h5 class="mb-0 fw-bold text-dark">SoniaCar</h5>
+            </div>
+        </div>
+
+        <button class="btn btn-outline-secondary btn-sm toggle-btn" (click)="toggleSidebar()"
+            [attr.aria-label]="isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'">
+            <i class="bx" [class.bx-chevron-right]="isCollapsed" [class.bx-chevron-left]="!isCollapsed"></i>
+        </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav p-2">
+        <div class="nav-item" *ngFor="let item of menuItems">
+            <a class="nav-link w-100 d-flex align-items-center text-start border-0 rounded"
+                [class.active]="activeItem === item.id" [routerLink]="item.route" (click)="activeItem = item.id"
+                [attr.title]="isCollapsed ? item.label : null">
+
+                <div class="icon-container position-relative">
+                    <i class="{{item.icon}} nav-icon"></i>
+                </div>
+
+                <span class="nav-text" [class.d-none]="isCollapsed">
+                    {{item.label}}
+                </span>
+
+                <div class="active-indicator ms-auto" *ngIf="activeItem === item.id && !isCollapsed">
+                    <div class="indicator-dot bg-white rounded-circle"></div>
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer p-3 border-top mt-auto" [class.d-none]="isCollapsed">
+        <div class="user-info d-flex align-items-center p-2 bg-light rounded">
+            <div class="user-avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2">
+                <i class="bx bx-user text-white"></i>
+            </div>
+            <div class="user-details flex-grow-1">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <div class="fw-semibold text-dark small">
+                          {{ usuarioActual?.nombreUsuario || 'No logueado' }}
+                        </div>
+                        <div class="text-muted small">
+                          {{ usuarioActual?.rol || '' }}
+                        </div>
+                    </div>
+                    <button (click)="clousesession()" class="btn btn-link p-0 logout-btn" title="Cerrar sesión">
+                        <i class="bx bx-log-out"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

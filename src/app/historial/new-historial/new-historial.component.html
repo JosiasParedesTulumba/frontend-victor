@@ -1,0 +1,42 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Registrar Evento de Historial</h5>
+      <button type="button" class="close-btn" (click)="onClose()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="historialForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="matricula" class="form-label">Matricula de Vehículo:</label>
+              <input type="text" class="form-control" id="matricula" formControlName="matricula" placeholder="Ej. ABC1234">
+            </div>
+            <div class="mb-3">
+              <label for="fecha" class="form-label">Cuando:</label>
+              <input type="date" class="form-control" id="fecha" formControlName="fecha">
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="mb-3">
+              <label for="evento" class="form-label">Evento</label>
+              <input type="text" class="form-control" id="evento" formControlName="evento" placeholder="Ej. Mantenimiento">
+            </div>
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <input type="text" class="form-control" id="descripcion" formControlName="descripcion" placeholder="Ej. Cambio de aceite">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+          <button type="submit" class="btn btn-success custom-btn">
+            <i class="bx bx-save me-1"></i> Registrar Evento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

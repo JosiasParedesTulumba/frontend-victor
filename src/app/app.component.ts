@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
   standalone: false,
   styleUrl: './app.component.css'
 })
+
 export class AppComponent {
-  title = 'proyect-f-reservas-v';
+  title = 'mi-proyecto';
 }
