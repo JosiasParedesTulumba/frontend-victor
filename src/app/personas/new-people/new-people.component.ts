@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PersonasService } from '../services/personas.service';
 import { Rol, RolesService } from '../services/roles.service';
+import { PermisosService } from '../../auth/services/permisos.service';
 
 @Component({
   selector: 'app-new-people',
@@ -28,12 +29,19 @@ export class NewPeopleComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private personasService: PersonasService,
-    private rolService: RolesService
+    private rolService: RolesService,
+    public permisos: PermisosService
   ) { }
 
   ngOnInit(): void {
     this.initForm();
     this.cargarRoles();
+
+    if (this.permisos.esAdmin()) {
+      this.tiposPersonaDisponibles = ['Cliente', 'Empleado'];
+    } else {
+      this.tiposPersonaDisponibles = ['Cliente'];
+    }
   }
 
   initForm(): void {
@@ -112,6 +120,9 @@ export class NewPeopleComponent implements OnInit {
 
       const formData = this.personaForm.value;
 
+      if (!this.permisos.esAdmin()) {
+        formData.tipoPersona = 'Cliente';
+      }
       // Preparar datos para la API
       const personaData = {
         dni: formData.dni,
@@ -179,4 +190,6 @@ export class NewPeopleComponent implements OnInit {
     }
     return '';
   }
+
+  tiposPersonaDisponibles: string[] = [];
 }

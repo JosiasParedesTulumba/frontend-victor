@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { VehiculosService } from '../services/vehiculos.service';
 import { Vehiculo } from '../interfaces/vehiculo.interface';
+import { AuthService } from '../../auth/services/auth.service';
+import { PermisosService } from '../../auth/services/permisos.service';
 
 @Component({
   standalone: false,
@@ -23,7 +25,10 @@ export class ListVehiculosComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
 
-  constructor(private vehiculosService: VehiculosService) { }
+  constructor(
+    private vehiculosService: VehiculosService,
+    public permisos: PermisosService
+  ) { }
 
   ngOnInit() {
     this.cargarVehiculos();
@@ -117,5 +122,10 @@ export class ListVehiculosComponent implements OnInit {
 
       return cumpleFiltroMatricula && cumpleFiltroEstado && cumpleFiltroAnio && cumpleFiltroTipo;
     });
+  }
+
+  // Agrega este método al componente
+  mostrarAcciones(): boolean {
+    return !this.permisos.esSupervisor();
   }
 }

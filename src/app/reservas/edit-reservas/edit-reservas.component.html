@@ -34,14 +34,25 @@
           <label for="descripcion" class="form-label">Descripción:</label>
           <textarea class="form-control" id="descripcion" formControlName="descripcion" rows="3"></textarea>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
-          <button type="submit" class="btn btn-success custom-btn">
-            <i class="bx bx-save me-1"></i> Guardar Cambios
-          </button>
+        
+        <!-- Mensaje de error -->
+        <div *ngIf="mensajeError" class="alert alert-danger mt-3" role="alert">
+          <i class="bx bx-error-circle"></i> {{ mensajeError }}
         </div>
-        <div *ngIf="mensajeError" class="alert alert-danger mt-2">{{ mensajeError }}</div>
       </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onClose()" [disabled]="isSubmitting">Cancelar</button>
+      <button type="submit" class="btn btn-success custom-btn" (click)="onSubmit()" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting">
+          <i class="bx bx-save me-1"></i> Guardar Cambios
+        </span>
+        <span *ngIf="isSubmitting">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Guardando...
+        </span>
+      </button>
     </div>
   </div>
 </div>

@@ -1,0 +1,49 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">Editar Evento de Historial</h5>
+            <button type="button" class="close-btn" (click)="onClose()">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="historialForm" (ngSubmit)="onSubmit()">
+                <div class="form-row">
+                    <div class="form-column">
+                        <div class="mb-3">
+                            <label for="vehiculo_id" class="form-label">Matricula de Vehículo:</label>
+                            <select class="form-control" id="vehiculo_id" formControlName="vehiculo_id">
+                                <option value="">Seleccione una matrícula</option>
+                                <option *ngFor="let vehiculo of vehiculos" [value]="vehiculo.vehiculo_id">
+                                    {{ vehiculo.matricula }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha_evento" class="form-label">Cuando:</label>
+                            <input type="date" class="form-control" id="fecha_evento" formControlName="fecha_evento">
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <div class="mb-3">
+                            <label for="tipo_evento" class="form-label">Evento</label>
+                            <input type="text" class="form-control" id="tipo_evento" formControlName="tipo_evento"
+                                placeholder="Ej. Mantenimiento">
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripcion</label>
+                            <input type="text" class="form-control" id="descripcion" formControlName="descripcion"
+                                placeholder="Ej. Cambio de aceite">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary custom-btn">
+                        <i class="bx bx-save me-1"></i> Actualizar Evento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

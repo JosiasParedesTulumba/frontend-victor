@@ -1,10 +1,45 @@
-export interface Reserva {
-  id: string;
-  clienteDNI: string;
+export interface Persona {
+  persona_id: number;
+  dni: string;
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  correo: string;
+  direccion: string;
+  fecha_creacion: Date;
+  tipo_persona: number;
+  estado_persona: number;
+  puesto: string;
+}
+
+export interface Vehiculo {
+  vehiculo_id: number;
+  usuario_id: number;
+  modelo: string;
   matricula: string;
-  fechaInicio: string;
-  fechaFin: string;
+  anio: number;
+  tipo_vehiculo: number;
+  precio: number;
+  capacidad: number;
+  estado_actual: number;
+  estado_vehiculo: number;
+  fecha_creacion?: Date;
+  fecha_actualizacion?: Date;
+}
+
+export interface Usuario {
+  usuario_id: number;
+  username: string;
+}
+
+export interface Reserva {
+  reserva_id: number;
+  vehiculo: Vehiculo;
+  persona: Persona;
+  usuario: Usuario;
+  fecha_reserva: Date;
+  fecha_inicio: Date;
+  fecha_fin: Date;
   descripcion: string;
-  fechaRegistro?: string;
-  estado?: 'Activa' | 'Finalizada' | 'Cancelada';
-} 
+  estado_reserva: number; // 1 = Activa, 0 = Cancelada
+}

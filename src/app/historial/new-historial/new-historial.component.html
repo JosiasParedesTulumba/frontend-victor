@@ -11,18 +11,23 @@
         <div class="form-row">
           <div class="form-column">
             <div class="mb-3">
-              <label for="matricula" class="form-label">Matricula de Vehículo:</label>
-              <input type="text" class="form-control" id="matricula" formControlName="matricula" placeholder="Ej. ABC1234">
+              <label for="vehiculo_id" class="form-label">Matricula de Vehículo:</label>
+              <select class="form-control" id="vehiculo_id" formControlName="vehiculo_id">
+                <option value="">Seleccione una matrícula</option>
+                <option *ngFor="let vehiculo of vehiculos" [value]="vehiculo.vehiculo_id">
+                  {{ vehiculo.matricula }}
+                </option>
+              </select>
             </div>
             <div class="mb-3">
-              <label for="fecha" class="form-label">Cuando:</label>
-              <input type="date" class="form-control" id="fecha" formControlName="fecha">
+              <label for="fecha_evento" class="form-label">Cuando:</label>
+              <input type="date" class="form-control" id="fecha_evento" formControlName="fecha_evento">
             </div>
           </div>
           <div class="form-column">
             <div class="mb-3">
-              <label for="evento" class="form-label">Evento</label>
-              <input type="text" class="form-control" id="evento" formControlName="evento" placeholder="Ej. Mantenimiento">
+              <label for="tipo_evento" class="form-label">Evento</label>
+              <input type="text" class="form-control" id="tipo_evento" formControlName="tipo_evento" placeholder="Ej. Mantenimiento">
             </div>
             <div class="mb-3">
               <label for="descripcion" class="form-label">Descripcion</label>

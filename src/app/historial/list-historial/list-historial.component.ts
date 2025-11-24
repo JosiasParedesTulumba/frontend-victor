@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HVehiculo } from '../interfaces/h-vehiculo.interface';
 import { HistorialService } from '../services/historial.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { PermisosService } from '../../auth/services/permisos.service';
 
 @Component({
   selector: 'app-list-historial',
@@ -10,14 +12,20 @@ import { HistorialService } from '../services/historial.service';
 })
 export class ListHistorialComponent implements OnInit {
   isModalOpen = false;
+  isEditModalOpen = false;
   historiales: HVehiculo[] = [];
+  historialToEdit: HVehiculo | null = null;
   loading = false;
   error = '';
 
   filtroTipoEvento: string = '';
   filtroFechaEvento: string = '';
 
-  constructor(private historialService: HistorialService) { }
+  constructor(
+    private historialService: HistorialService,
+    private authService: AuthService,
+    public permisos: PermisosService
+  ) { }
 
   ngOnInit() {
     this.loadHistoriales();
@@ -61,6 +69,24 @@ export class ListHistorialComponent implements OnInit {
     });
   }
 
+  openEditModal(historial: HVehiculo) {
+    this.historialToEdit = historial;
+    this.isEditModalOpen = true;
+  }
+
+  closeEditModal() {
+    this.isEditModalOpen = false;
+    this.historialToEdit = null;
+  }
+
+  onUpdateHistorial(historialActualizado: HVehiculo) {
+    const index = this.historiales.findIndex(h => h.historial_id === historialActualizado.historial_id);
+    if (index !== -1) {
+      this.historiales[index] = historialActualizado;
+    }
+    this.closeEditModal();
+  }
+
   // Filtrar historiales
   get historialesFiltrados(): HVehiculo[] {
     let filtered = this.historiales;
@@ -94,49 +120,41 @@ export class ListHistorialComponent implements OnInit {
       month: '2-digit',
       day: '2-digit'
     };
-    
-    // Si ya es un objeto Date, lo usamos directamente
+
     const dateObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
-    
-    // Verificamos si la fecha es válida
+
     if (isNaN(dateObj.getTime())) {
       console.error('Fecha inválida:', fecha);
       return 'Fecha inválida';
     }
-    
+
     return dateObj.toLocaleDateString('es-ES', options);
   }
 
   // Obtener nombre de usuario para mostrar en la tabla
   getNombreUsuario(historial: any): string {
-    // Si no hay usuario, retornar mensaje
     if (!historial.usuario) {
       return 'Usuario no disponible';
     }
 
     const usuario = historial.usuario;
-    
-    // Usar la propiedad nombre_usuario que vimos en la consola
+
     if (usuario.nombre_usuario) {
       return usuario.nombre_usuario;
     }
-    
-    // Si por alguna razón no está, mostrar el ID
+
     return `Usuario ${usuario.usuario_id || 'sin nombre'}`;
   }
 
   // Ver detalles del historial
-  verDetalles(historial: HVehiculo): void {
-    // Aquí puedes implementar un modal de detalles o navegación
-    console.log('Ver detalles:', historial);
-    alert(`Detalles del historial:\nID: ${historial.historial_id}\nVehículo ID: ${historial.vehiculo_id}\nTipo Evento: ${historial.tipo_evento}\nDescripción: ${historial.descripcion}`);
-  }
+  // verDetalles(historial: HVehiculo): void {
+  //   console.log('Ver detalles:', historial);
+  //   alert(`Detalles del historial:\nID: ${historial.historial_id}\nVehículo ID: ${historial.vehiculo_id}\nTipo Evento: ${historial.tipo_evento}\nDescripción: ${historial.descripcion}`);
+  // }
 
   // Editar historial
   editarHistorial(historial: HVehiculo): void {
-    // Aquí puedes implementar la lógica para editar el historial
-    // Por ejemplo, abrir un modal de edición
-    console.log('Editando historial:', historial);
+    this.openEditModal(historial);
   }
 
   // Eliminar historial
@@ -144,7 +162,6 @@ export class ListHistorialComponent implements OnInit {
     if (confirm('¿Está seguro de que desea eliminar este registro de historial?')) {
       this.historialService.remove(historial.historial_id).subscribe({
         next: () => {
-          // Recargar la lista o actualizar localmente
           this.loadHistoriales();
         },
         error: (error) => {
@@ -153,5 +170,14 @@ export class ListHistorialComponent implements OnInit {
         }
       });
     }
+  }
+
+  puedesCrearHistorial(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.rol !== 'SUPERVISOR';
+  }
+
+  mostrarAcciones(): boolean {
+    return !this.permisos.esSupervisor();
   }
 }

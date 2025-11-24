@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PersonasService } from '../services/personas.service';
 import { Persona } from '../interfaces/persona.interface';
+import { AuthService } from '../../auth/services/auth.service';
+import { PermisosService } from '../../auth/services/permisos.service';
 
 @Component({
   selector: 'app-list-people',
@@ -22,7 +24,11 @@ export class ListPeopleComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
 
-  constructor(private personasService: PersonasService) { }
+  constructor(
+    private personasService: PersonasService,
+    private authService: AuthService,
+    public permisos: PermisosService
+  ) { }
 
   ngOnInit(): void {
     this.cargarPersonas();
@@ -148,5 +154,14 @@ export class ListPeopleComponent implements OnInit {
     this.mostrarClientes = false;
   }
 
+  // Verificar si el usuario puede crear personas (no SUPERVISOR)
+  puedeCrearPersona(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.rol !== 'SUPERVISOR';
+  }
+
+  mostrarAcciones(): boolean {
+    return !this.permisos.esSupervisor() && !this.permisos.esEmpleado();
+  }
   
 }

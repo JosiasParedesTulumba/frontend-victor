@@ -19,7 +19,7 @@ export class SidebarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Suscribirse a los cambios del usuario
+    // Mantener usuario
     this.authService.currentUser$.subscribe(user => {
       this.usuarioActual = user ? {
         nombreUsuario: user.nombre_usuario,
@@ -28,7 +28,21 @@ export class SidebarComponent implements OnInit {
         email: user.email
       } : null;
     });
+
+    // Detectar ruta actual al cargar y marcarla como activa
+    const currentRoute = this.router.url.split('?')[0]; // sin query params
+    const found = this.menuItems.find(i => i.route === currentRoute);
+
+    if (found) this.activeItem = found.id;
+
+    // Escuchar cambios de ruta para actualizar el activo
+    this.router.events.subscribe(() => {
+      const newRoute = this.router.url.split('?')[0];
+      const selected = this.menuItems.find(i => i.route === newRoute);
+      if (selected) this.activeItem = selected.id;
+    });
   }
+
 
   isCollapsed = false;
   activeItem = 'dashboard';

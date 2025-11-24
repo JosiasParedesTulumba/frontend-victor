@@ -153,4 +153,13 @@ export class VehiculosService {
     };
     return estados[estado] || 'Disponible';
   }
+
+  getMatriculas(): Observable<{ vehiculo_id: number, matricula: string }[]> {
+    return this.http.get<{ vehiculo_id: number, matricula: string }[]>(
+      `${this.apiUrl}/matriculas/lista`,
+      { headers: this.authService.getAuthHeaders() }
+    );
+  }
+
+  
 } 

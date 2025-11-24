@@ -1,8 +1,12 @@
+import { Reserva } from '../../reservas/interfaces/reserva.interface';
+
 export interface Pago {
-  id?: string;
-  clienteDNI: string;
-  reservaId?: string;
-  monto: number;
-  metodoPago: string;
-  fechaPago?: string;
+  pago_id?: number;
+  reserva: Reserva;
+  usuario_id: number;
+  fecha_pago: Date | string;
+  monto: string;
+  metodo_pago: number;
+  estado_pago: number;
+  monto_ajuste?: string;
 } 

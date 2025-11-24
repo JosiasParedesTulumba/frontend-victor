@@ -1,42 +1,48 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Pago } from '../interfaces/pago.interface';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PagosService {
-  private localStorageKey = 'pagos';
 
-  getPagos = (): Pago[] => {
-    const pagos = localStorage.getItem(this.localStorageKey);
-    return pagos ? JSON.parse(pagos) : [];
+  private apiUrl = 'http://localhost:3000/api/pago';
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
+
+  getPagos(): Observable<Pago[]> {
+    return this.http.get<Pago[]>(this.apiUrl, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 
-  private getNextPagoId = (): string => {
-    const pagos = this.getPagos();
-    if (pagos.length === 0) return '1';
-    const maxId = Math.max(...pagos.map(p => parseInt(p.id || '0', 10) || 0));
-    return (maxId + 1).toString();
+  getPagoById(id: number): Observable<Pago> {
+    return this.http.get<Pago>(`${this.apiUrl}/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 
-  addPago = (pago: Pago): void => {
-    const pagos = this.getPagos();
-    pago.id = this.getNextPagoId();
-    pago.fechaPago = new Date().toLocaleString();
-    pagos.push(pago);
-    localStorage.setItem(this.localStorageKey, JSON.stringify(pagos));
+  addPago(pagoData: any): Observable<Pago> {
+    return this.http.post<Pago>(this.apiUrl, pagoData, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 
-  actualizarPago = (pagoEditado: Pago): void => {
-    const pagos = this.getPagos().map(p =>
-      p.id === pagoEditado.id ? { ...p, ...pagoEditado } : p
-    );
-    localStorage.setItem(this.localStorageKey, JSON.stringify(pagos));
+  actualizarPago(id: number, pagoData: any): Observable<Pago> {
+    return this.http.patch<Pago>(`${this.apiUrl}/${id}`, pagoData, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 
-  eliminarPago = (index: number): void => {
-    const pagos = this.getPagos();
-    pagos.splice(index, 1);
-    localStorage.setItem(this.localStorageKey, JSON.stringify(pagos));
+  eliminarPago(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 } 

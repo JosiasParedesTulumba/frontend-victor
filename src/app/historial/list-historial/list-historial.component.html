@@ -65,12 +65,13 @@
       <h3 class="mb-0 fw-bold text-dark">Historial de Vehículos</h3>
     </div>
     <button 
+      *ngIf="puedesCrearHistorial()"
       class="btn btn-success d-flex align-items-center custom-btn" 
       (click)="openModal()" 
       [disabled]="loading"
     >
       <i class="bx bx-plus me-2"></i>
-      Agregar Registro
+      Agregar Historial
     </button>
   </div>
 
@@ -93,14 +94,14 @@
             <th class="text-center">Fecha</th>
             <th class="text-center">Descripción</th>
             <th class="text-center">Evento</th>
-            <th class="text-center">Acciones</th>
+            <th *ngIf="mostrarAcciones()" class="text-center">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let historial of historialesFiltrados">
             <!-- Columna Vehículo -->
             <td class="text-center">
-              {{ historial.vehiculo?.modelo || 'Sin vehículo' }} - {{ historial.vehiculo?.matricula || 'Sin matrícula' }}
+              {{ historial.vehiculo?.matricula || 'Sin matrícula' }}
             </td>
             
             <!-- Columna Usuario Responsable -->
@@ -124,19 +125,13 @@
             </td>
             
             <!-- Columna Acciones -->
-            <td class="text-center">
+            <td *ngIf="mostrarAcciones()" class="text-center">
               <button class="btn btn-link text-primary p-0 me-2" (click)="editarHistorial(historial)" title="Editar">
                 <i class='bx bx-edit'></i>
               </button>
-              <button class="btn btn-link text-danger p-0" (click)="eliminarHistorial(historial)" title="Eliminar">
+              <button *ngIf="permisos.puedeEliminarHistorial()" class="btn btn-link text-danger p-0" (click)="eliminarHistorial(historial)" title="Eliminar">
                 <i class='bx bx-trash'></i>
               </button>
-              <small 
-                *ngIf="!historial.estado" 
-                class="text-danger d-block mt-1"
-              >
-                Inactivo
-              </small>
             </td>
         </tr>
       </tbody>
@@ -149,3 +144,10 @@
   (closeModal)="closeModal()"
   (saveHistorial)="onSaveHistorial($event)">
 </app-new-historial>
+
+<app-edit-historial
+  [isOpen]="isEditModalOpen"
+  [historialToEdit]="historialToEdit"
+  (closeModal)="closeEditModal()"
+  (updateHistorial)="onUpdateHistorial($event)">
+</app-edit-historial>

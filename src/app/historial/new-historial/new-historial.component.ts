@@ -5,6 +5,7 @@ import { VehiculosService } from '../../vehiculos/services/vehiculos.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { CreateHVehiculoDto } from '../interfaces/h-vehiculo.interface';
 import { Vehiculo } from '../../vehiculos/interfaces/vehiculo.interface';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-new-historial',
@@ -20,7 +21,7 @@ export class NewHistorialComponent implements OnInit {
   historialForm!: FormGroup;
   loading = false;
   error = '';
-  vehiculos: Vehiculo[] = [];
+  vehiculos: { vehiculo_id: number, matricula: string }[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -47,7 +48,7 @@ export class NewHistorialComponent implements OnInit {
   }
 
   loadVehiculos() {
-    this.vehiculosService.getVehiculos().subscribe({
+    this.vehiculosService.getMatriculas().subscribe({
       next: (vehiculos) => {
         this.vehiculos = vehiculos;
       },
@@ -65,6 +66,29 @@ export class NewHistorialComponent implements OnInit {
   }
 
   onClose(): void {
+    if (this.historialForm.dirty) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Tienes cambios sin guardar. ¿Deseas salir de todos modos?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.resetForm();
+          this.closeModal.emit();
+        }
+      });
+    } else {
+      this.resetForm();
+      this.closeModal.emit();
+    }
+  }
+
+  private resetForm() {
     this.historialForm.reset();
     this.error = '';
     const currentUser = this.authService.getCurrentUser();
@@ -72,13 +96,22 @@ export class NewHistorialComponent implements OnInit {
       usuario_id: currentUser?.usuario_id || '',
       fecha_evento: new Date().toISOString().substring(0, 16)
     });
-    this.closeModal.emit();
   }
 
   onSubmit(): void {
     if (this.historialForm.valid) {
       this.loading = true;
       this.error = '';
+
+      // Mostrar SweetAlert de carga
+      Swal.fire({
+        title: 'Creando historial',
+        text: 'Por favor espere...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
       const formData: CreateHVehiculoDto = {
         vehiculo_id: Number(this.historialForm.value.vehiculo_id),
@@ -91,18 +124,54 @@ export class NewHistorialComponent implements OnInit {
       this.historialService.create(formData).subscribe({
         next: (nuevoHistorial) => {
           this.loading = false;
+          
+          // Cerrar SweetAlert de carga
+          Swal.close();
+          
+          // Cerrar el modal
+          this.resetForm();
+          this.closeModal.emit();
+          
+          // Mostrar mensaje de éxito
+          setTimeout(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'El historial ha sido creado correctamente',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#4CAF50'
+            });
+          }, 100);
+          
           this.saveHistorial.emit(nuevoHistorial);
-          this.historialForm.reset();
-          this.initForm(); // Reiniciar con valores por defecto
-          this.onClose();
         },
         error: (error) => {
           console.error('Error al crear historial:', error);
-          this.error = error.error?.message || 'Error al crear el historial. Verifique los datos.';
           this.loading = false;
+          
+          // Cerrar SweetAlert de carga
+          Swal.close();
+          
+          // Mostrar mensaje de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.error?.message || 'Error al crear el historial. Verifique los datos.',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#f44336'
+          });
         }
       });
     } else {
+      // Mostrar SweetAlert de validación
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor complete todos los campos requeridos',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#FFA500'
+      });
+      
       this.markFormGroupTouched();
     }
   }

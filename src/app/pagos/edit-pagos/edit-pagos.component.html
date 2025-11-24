@@ -1,46 +1,60 @@
-<div class="modal-overlay" *ngIf="">
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h5 class="modal-title">Editar Pago</h5>
-      <button type="button" class="close-btn">
+      <button type="button" class="close-btn" (click)="onClose()">
         <i class="bx bx-x"></i>
       </button>
     </div>
     <div class="modal-body">
-      <form>
+      <form [formGroup]="pagoForm" (ngSubmit)="onSubmit()">
         <div class="form-row">
           <div class="form-column">
             <div class="mb-3">
-              <label for="clienteDNI" class="form-label">DNI Cliente:</label>
-              <input type="text" class="form-control" id="clienteDNI" formControlName="clienteDNI" [disabled]="true">
+              <label for="cliente" class="form-label">Cliente:</label>
+              <input type="text" class="form-control" id="cliente" 
+                [value]="(pago?.reserva?.persona?.nombre || '') + ' ' + (pago?.reserva?.persona?.apellido || '')" 
+                [disabled]="true">
             </div>
             <div class="mb-3">
               <label for="reservaId" class="form-label">N° Reserva:</label>
-              <input type="text" class="form-control" id="reservaId" formControlName="reservaId" [disabled]="true">
+              <input type="text" class="form-control" id="reservaId" 
+                [value]="pago?.reserva?.reserva_id || ''" 
+                [disabled]="true">
             </div>
           </div>
           <div class="form-column">
             <div class="mb-3">
               <label for="monto" class="form-label">Monto:</label>
-              <input type="number" class="form-control" id="monto" formControlName="monto" [disabled]="true">
+              <input type="text" class="form-control" id="monto" 
+                [value]="'$' + pago?.monto" 
+                [disabled]="true">
             </div>
             <div class="mb-3">
-              <label for="metodoPago" class="form-label">Método de Pago:</label>
-              <select class="form-select" id="metodoPago" formControlName="metodoPago">
-                <option value="Tarjeta">Tarjeta</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Transferencia">Transferencia</option>
+              <label for="metodo_pago" class="form-label">Método de Pago:</label>
+              <select class="form-select" id="metodo_pago" formControlName="metodo_pago">
+                <option value="1">Tarjeta</option>
+                <option value="2">Efectivo</option>
+                <option value="3">Transferencia</option>
+                <option value="4">Depósito</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="estado_pago" class="form-label">Estado:</label>
+              <select class="form-select" id="estado_pago" formControlName="estado_pago">
+                <option value="0">Pendiente</option>
+                <option value="1">Completado</option>
               </select>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary">Cancelar</button>
+          <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
           <button type="submit" class="btn btn-success custom-btn">
             <i class="bx bx-save me-1"></i> Guardar Cambios
           </button>
         </div>
-        <div class="alert alert-danger mt-2"></div>
+        <div class="alert alert-danger mt-2" *ngIf="mensajeError">{{ mensajeError }}</div>
       </form>
     </div>
   </div>

@@ -2,8 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChange
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Pago } from '../interfaces/pago.interface';
 import { PagosService } from '../services/pagos.service';
-import { ReservasService } from '../../reservas/services/reservas.service';
-import { VehiculosService } from '../../vehiculos/services/vehiculos.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-pagos',
@@ -11,81 +10,85 @@ import { VehiculosService } from '../../vehiculos/services/vehiculos.service';
   templateUrl: './edit-pagos.component.html',
   styleUrl: './edit-pagos.component.css'
 })
-export class EditPagosComponent  { //implements OnInit, OnChanges
-  // @Input() isOpen: boolean = false;
-  // @Input() pago: Pago | null = null;
-  // @Output() closeModal = new EventEmitter<void>();
+export class EditPagosComponent implements OnInit, OnChanges {
+  @Input() isOpen: boolean = false;
+  @Input() pago: Pago | null = null;
+  @Output() closeModal = new EventEmitter<void>();
 
-  // pagoForm!: FormGroup;
-  // mensajeError: string = '';
+  pagoForm!: FormGroup;
+  mensajeError: string = '';
 
-  // constructor(
-  //   private fb: FormBuilder,
-  //   private pagosService: PagosService,
-  //   private reservasService: ReservasService,
-  //   private vehiculosService: VehiculosService
-  // ) {}
+  constructor(
+    private fb: FormBuilder,
+    private pagosService: PagosService
+  ) {}
 
-  // ngOnInit() {
-  //   this.initForm();
-  // }
+  ngOnInit() {
+    this.initForm();
+  }
 
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (changes['pago'] && this.pago) {
-  //     this.initForm();
-  //     this.pagoForm.patchValue(this.pago);
-  //     this.calcularMonto();
-  //   }
-  // }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['pago'] && this.pago) {
+      this.initForm();
+      this.pagoForm.patchValue({
+        metodo_pago: this.pago.metodo_pago,
+        estado_pago: this.pago.estado_pago
+      });
+    }
+  }
 
-  // initForm() {
-  //   this.pagoForm = this.fb.group({
-  //     clienteDNI: [{ value: '', disabled: true }, Validators.required],
-  //     reservaId: [{ value: '', disabled: true }, Validators.required],
-  //     monto: [{ value: '', disabled: true }, [Validators.required, Validators.min(0)]],
-  //     metodoPago: ['', Validators.required]
-  //   });
-  // }
+  initForm() {
+    this.pagoForm = this.fb.group({
+      metodo_pago: ['', Validators.required],
+      estado_pago: ['', Validators.required]
+    });
+  }
 
-  // calcularMonto() {
-  //   if (!this.pago || !this.pago.reservaId) return;
-  //   const reserva = this.reservasService.getReservas().find(r => r.id === this.pago!.reservaId);
-  //   if (!reserva) return;
-  //   const vehiculo = this.vehiculosService.getVehiculos().find(v => v.matricula === reserva.matricula);
-  //   if (!vehiculo) return;
-  //   const fechaInicio = new Date(reserva.fechaInicio);
-  //   const fechaFin = new Date(reserva.fechaFin);
-  //   const dias = Math.max(1, Math.ceil((fechaFin.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24)));
-  //   const monto = dias * vehiculo.precio;
-  //   this.pagoForm.get('monto')?.setValue(monto);
-  // }
+  onClose() {
+    this.closeModal.emit();
+    this.pagoForm.reset();
+    this.mensajeError = '';
+  }
 
-  // onClose() {
-  //   this.closeModal.emit();
-  //   this.pagoForm.reset();
-  //   this.mensajeError = '';
-  // }
+  onSubmit() {
+    this.mensajeError = '';
+    
+    if (!this.pagoForm.valid || !this.pago?.pago_id) {
+      this.mensajeError = 'Formulario inválido';
+      return;
+    }
 
-  // onSubmit() {
-  //   this.mensajeError = '';
-  //   if (this.pagoForm.valid && this.pago) {
-  //     const pagoEditado: Pago = {
-  //       ...this.pago,
-  //       ...this.pagoForm.getRawValue(),
-  //       id: this.pago.id,
-  //       clienteDNI: this.pago.clienteDNI,
-  //       reservaId: this.pago.reservaId
-  //     };
-  //     this.pagosService.actualizarPago(pagoEditado);
-  //     this.onClose();
-  //   } else {
-  //     this.mensajeError = 'Formulario inválido';
-  //   }
-  // }
+    const pagoData = {
+      metodo_pago: Number(this.pagoForm.get('metodo_pago')?.value),
+      estado_pago: Number(this.pagoForm.get('estado_pago')?.value)
+    };
 
-  // onBackdropClick(event: Event) {
-  //   if (event.target === event.currentTarget) {
-  //     this.onClose();
-  //   }
-  // }
+    this.pagosService.actualizarPago(this.pago.pago_id, pagoData).subscribe({
+      next: (response) => {
+        Swal.fire('Éxito', 'Pago actualizado correctamente', 'success');
+        this.onClose();
+      },
+      error: (error) => {
+        console.error('Error al actualizar pago:', error);
+        this.mensajeError = error.error?.message || 'Error al actualizar el pago';
+        Swal.fire('Error', this.mensajeError, 'error');
+      }
+    });
+  }
+
+  onBackdropClick(event: Event) {
+    if (event.target === event.currentTarget) {
+      this.onClose();
+    }
+  }
+
+  getMetodoPagoText(metodo: number): string {
+    const metodos: { [key: number]: string } = {
+      1: 'Tarjeta',
+      2: 'Efectivo',
+      3: 'Transferencia',
+      4: 'Depósito'
+    };
+    return metodos[metodo] || 'Desconocido';
+  }
 }

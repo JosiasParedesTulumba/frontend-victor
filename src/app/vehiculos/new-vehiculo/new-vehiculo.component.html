@@ -110,27 +110,54 @@
           <!-- Columna derecha -->
           <div class="form-column">
             <div class="mb-3">
-              <label for="matricula" class="form-label">Matrícula</label>
-              <input
-                type="text"
-                class="form-control"
-                id="matricula"
-                formControlName="matricula"
-                placeholder="Ej. ABC1234"
-                [class.is-invalid]="
-                  vehiculoForm.get('matricula')?.invalid &&
-                  vehiculoForm.get('matricula')?.touched
-                "
-              />
-              <div
-                class="invalid-feedback"
-                *ngIf="
-                  vehiculoForm.get('matricula')?.invalid &&
-                  vehiculoForm.get('matricula')?.touched
-                "
-              >
-                La matrícula es requerida
+              <label class="form-label">Matrícula</label>
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-grow-1">
+                  <input
+                    type="text"
+                    class="form-control text-uppercase text-center"
+                    id="matriculaPart1"
+                    formControlName="matriculaPart1"
+                    placeholder="ABC"
+                    maxlength="3"
+                    (input)="onMatriculaInput('matriculaPart1')"
+                    [class.is-invalid]="
+                      (vehiculoForm.get('matriculaPart1')?.invalid &&
+                      vehiculoForm.get('matriculaPart1')?.touched) ||
+                      (vehiculoForm.hasError('invalidMatriculaLength') && 
+                      vehiculoForm.get('matriculaPart1')?.touched)
+                    "
+                  />
+                </div>
+                <div class="fw-bold">-</div>
+                <div class="flex-grow-1">
+                  <input
+                    type="text"
+                    class="form-control text-uppercase text-center"
+                    id="matriculaPart2"
+                    formControlName="matriculaPart2"
+                    placeholder="123"
+                    maxlength="3"
+                    (input)="onMatriculaInput('matriculaPart2')"
+                    [class.is-invalid]="
+                      (vehiculoForm.get('matriculaPart2')?.invalid &&
+                      vehiculoForm.get('matriculaPart2')?.touched) ||
+                      (vehiculoForm.hasError('invalidMatriculaLength') && 
+                      vehiculoForm.get('matriculaPart2')?.touched)
+                    "
+                  />
+                </div>
               </div>
+              <div class="invalid-feedback d-block" *ngIf="vehiculoForm.hasError('invalidMatriculaLength')">
+                La matrícula debe tener 3 caracteres en cada campo
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="vehiculoForm.get('matriculaPart1')?.hasError('required') && vehiculoForm.get('matriculaPart1')?.touched">
+                La primera parte de la matrícula es requerida
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="vehiculoForm.get('matriculaPart2')?.hasError('required') && vehiculoForm.get('matriculaPart2')?.touched">
+                La segunda parte de la matrícula es requerida
+              </div>
+              <div class="text-muted small mt-1">Formato: ABC-123</div>
             </div>
 
             <div class="mb-3">

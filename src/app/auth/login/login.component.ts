@@ -37,7 +37,6 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: (response) => {
-        console.log('Login exitoso:');
         this.isLoading = false;
         this.router.navigate(['/dashboard']);
       },

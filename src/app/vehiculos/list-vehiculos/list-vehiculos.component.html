@@ -45,7 +45,10 @@
       <i class="bx bx-menu me-3" style="font-size: 2rem; color: #333;"></i>
       <h3 class="mb-0 fw-bold text-dark">Vehículos</h3>
     </div>
-    <button class="btn btn-success d-flex align-items-center custom-btn" (click)="openModal()">
+    <button 
+    *ngIf="permisos.puedeCrearVehiculo()"
+    class="btn btn-success d-flex align-items-center custom-btn" 
+    (click)="openModal()">
       <i class="bx bx-plus me-2"></i>
       Agregar Vehículo
     </button>
@@ -62,7 +65,7 @@
         <th>Capacidad</th>
         <th>Estado_actual</th>
         <th>Estado</th>
-        <th>Acciones</th>
+        <th *ngIf="mostrarAcciones()">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -79,7 +82,7 @@
             {{ vehiculo.estado }}
           </span>
         </td>
-        <td class="text-center">
+        <td *ngIf="mostrarAcciones()" class="text-center">
           <button class="btn btn-link text-primary p-0 me-2" (click)="abrirModalEditar(vehiculo)" title="Editar">
             <i class='bx bx-edit'></i>
           </button>
@@ -87,7 +90,7 @@
             <i class='bx bx-refresh'></i>
           </button>
           -->
-          <button class="btn btn-link text-danger p-0" (click)="eliminarVehiculo(vehiculo)" title="Eliminar">
+          <button *ngIf="permisos.puedeEliminarVehiculo()" class="btn btn-link text-danger p-0" (click)="eliminarVehiculo(vehiculo)" title="Eliminar">
             <i class='bx bx-trash'></i>
           </button>
         </td>
