@@ -88,7 +88,7 @@
     width: 29px;
     height: 24px;
     display: flex;
-    margin-right: 8px; 
+    margin-right: 8px;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
@@ -186,14 +186,31 @@
     background: linear-gradient(180deg, transparent 0%, #232e6b 100%);
 }
 
+.user-info {
+    background: #232e6b !important;
+    padding: 12px !important;
+    min-height: 60px;
+    height: 60px;
+}
+
+.user-avatar-container {
+    width: 45px;
+    min-width: 45px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 0;
+}
+
 .user-avatar {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
     aspect-ratio: 1/1;
-    min-width: 36px;
-    min-height: 36px;
-    max-width: 36px;
-    max-height: 36px;
+    min-width: 32px;
+    min-height: 32px;
+    max-width: 32px;
+    max-height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -204,14 +221,13 @@
 
 .user-avatar .bx {
     color: #fff !important;
-}
-
-.user-info {
-    background: #232e6b !important;
+    font-size: 20px !important;
 }
 
 .user-details {
     min-width: 0;
+    flex: 1;
+    transition: all 0.3s ease;
 }
 
 .user-details div {
@@ -238,8 +254,8 @@
     box-shadow: none;
     display: flex;
     align-items: center;
-    margin-left: 2.5em;
 }
+
 .logout-btn:hover {
     color: #ff5252;
     background: none;
@@ -278,7 +294,8 @@
 }
 
 /* Boxicons alignment fix */
-.nav-icon, .icon-container .bx {
+.nav-icon,
+.icon-container .bx {
     font-size: 22px !important;
     display: flex;
     align-items: center;
@@ -286,9 +303,12 @@
     line-height: 1;
     color: #c5cae9 !important;
 }
-.nav-link.active .icon-container .bx, .nav-link.active .nav-icon {
+
+.nav-link.active .icon-container .bx,
+.nav-link.active .nav-icon {
     color: #fff !important;
 }
+
 .brand-icon .bx {
     font-size: 20px !important;
     display: flex;
@@ -296,10 +316,12 @@
     justify-content: center;
     line-height: 1;
 }
+
 .user-avatar .bx {
     font-size: 22px !important;
     margin: 0 !important;
 }
+
 .toggle-btn .bx {
     font-size: 20px !important;
     display: flex;
@@ -307,13 +329,16 @@
     justify-content: center;
     line-height: 1;
 }
+
 .sidebar-header .d-flex.align-items-center {
     flex-wrap: nowrap;
 }
+
 .sidebar-brand .d-flex.align-items-center {
     display: flex;
     align-items: center;
 }
+
 .brand-icon {
     width: 32px;
     height: 32px;
@@ -324,7 +349,9 @@
     align-items: center;
     justify-content: center;
 }
-.sidebar-brand h5, .sidebar-brand .mb-0 {
+
+.sidebar-brand h5,
+.sidebar-brand .mb-0 {
     margin-bottom: 0 !important;
     margin-left: 3rem;
     font-weight: bold;

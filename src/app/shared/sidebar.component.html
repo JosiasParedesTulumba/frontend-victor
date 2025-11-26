@@ -39,26 +39,27 @@
     </nav>
 
     <!-- Footer -->
-    <div class="sidebar-footer p-3 border-top mt-auto" [class.d-none]="isCollapsed">
-        <div class="user-info d-flex align-items-center p-2 bg-light rounded">
-            <div class="user-avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2">
-                <i class="bx bx-user text-white"></i>
-            </div>
-            <div class="user-details flex-grow-1">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <div class="fw-semibold text-dark small">
-                            {{ usuarioActual?.nombreUsuario || 'No logueado' }}
-                        </div>
-                        <div class="text-muted small">
-                            {{ usuarioActual?.rol || '' }}
-                        </div>
-                    </div>
-                    <button (click)="clousesession()" class="btn btn-link p-0 logout-btn" title="Cerrar sesión">
-                        <i class="bx bx-log-out"></i>
-                    </button>
+    <div class="sidebar-footer p-2 border-top mt-auto">
+        <div class="user-info d-flex align-items-center bg-light rounded">
+            <div class="user-avatar-container">
+                <div class="user-avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bx bx-user text-white"></i>
                 </div>
             </div>
+
+            <div class="user-details" [class.d-none]="isCollapsed">
+                <div class="fw-semibold text-dark small">
+                    {{ usuarioActual?.nombreUsuario || 'No logueado' }}
+                </div>
+                <div class="text-muted small">
+                    {{ usuarioActual?.rol || '' }}
+                </div>
+            </div>
+
+            <button (click)="clousesession()" class="btn btn-link p-0 logout-btn ms-auto" [class.d-none]="isCollapsed"
+                title="Cerrar sesión">
+                <i class="bx bx-log-out"></i>
+            </button>
         </div>
     </div>
 </div>
