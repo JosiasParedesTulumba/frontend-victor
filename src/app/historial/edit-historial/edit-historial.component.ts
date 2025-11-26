@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HistorialService } from '../services/historial.service';
 import { VehiculosService } from '../../vehiculos/services/vehiculos.service';
 import { AuthService } from '../../auth/services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-historial',
@@ -11,7 +12,7 @@ import { AuthService } from '../../auth/services/auth.service';
   templateUrl: './edit-historial.component.html',
   styleUrls: ['./edit-historial.component.css']
 })
-export class EditHistorialComponent implements OnInit, OnChanges{
+export class EditHistorialComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Input() historialToEdit: HVehiculo | null = null;
   @Output() closeModal = new EventEmitter<void>();
@@ -60,6 +61,7 @@ export class EditHistorialComponent implements OnInit, OnChanges{
       error: (error) => {
         console.error('Error al cargar vehículos:', error);
         this.error = 'Error al cargar la lista de vehículos';
+        Swal.fire('Error', 'No se pudieron cargar los vehículos', 'error');
       }
     });
   }
@@ -86,9 +88,29 @@ export class EditHistorialComponent implements OnInit, OnChanges{
   }
 
   onClose(): void {
-    this.historialForm.reset();
-    this.error = '';
-    this.closeModal.emit();
+    // Verificar si el formulario tiene cambios sin guardar
+    if (this.historialForm.dirty) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Tienes cambios sin guardar. ¿Deseas salir de todos modos?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.historialForm.reset();
+          this.error = '';
+          this.closeModal.emit();
+        }
+      });
+    } else {
+      this.historialForm.reset();
+      this.error = '';
+      this.closeModal.emit();
+    }
   }
 
   onSubmit(): void {
@@ -104,20 +126,65 @@ export class EditHistorialComponent implements OnInit, OnChanges{
         fecha_evento: new Date(this.historialForm.value.fecha_evento)
       };
 
+      // Mostrar SweetAlert de carga
+      Swal.fire({
+        title: 'Actualizando historial',
+        text: 'Por favor espere...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       this.historialService.update(this.historialToEdit.historial_id, formData).subscribe({
         next: (historialActualizado) => {
           this.loading = false;
+
+          // Cerrar SweetAlert de carga
+          Swal.close();
+
+          // Emitir evento y cerrar modal
           this.updateHistorial.emit(historialActualizado);
           this.historialForm.reset();
-          this.onClose();
+          this.closeModal.emit();
+
+          // Mostrar SweetAlert de éxito después de cerrar el modal
+          setTimeout(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'El historial ha sido actualizado correctamente',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#4CAF50'
+            });
+          }, 100);
         },
         error: (error) => {
           console.error('Error al actualizar historial:', error);
-          this.error = error.error?.message || 'Error al actualizar el historial. Verifique los datos.';
           this.loading = false;
+
+          // Cerrar SweetAlert de carga
+          Swal.close();
+
+          // Mostrar SweetAlert de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.error?.message || 'Error al actualizar el historial. Verifique los datos.',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#f44336'
+          });
         }
       });
     } else {
+      // Mostrar SweetAlert de validación
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor complete todos los campos requeridos',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#FFA500'
+      });
       this.markFormGroupTouched();
     }
   }

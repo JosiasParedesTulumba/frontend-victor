@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PersonasService } from '../services/personas.service';
 import { Rol, RolesService } from '../services/roles.service';
 import { PermisosService } from '../../auth/services/permisos.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-new-people',
@@ -84,6 +85,7 @@ export class NewPeopleComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar roles:', error);
+        Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
         // Roles de respaldo si falla la API
         this.roles = [
           { rol_id: 1, nombre_rol: 'ADMIN', estado_rol: 1 },
@@ -105,12 +107,35 @@ export class NewPeopleComponent implements OnInit {
   }
 
   onClose(): void {
+    // Verificar si el formulario tiene cambios sin guardar
+    if (this.personaForm.dirty) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Tienes cambios sin guardar. ¿Deseas salir de todos modos?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.resetForm();
+          this.closeModal.emit();
+        }
+      });
+    } else {
+      this.resetForm();
+      this.closeModal.emit();
+    }
+  }
+
+  private resetForm(): void {
     this.personaForm.reset({
       tipoPersona: 'Cliente', // Valor por defecto
       rol: ''
     });
     this.errorMessage = '';
-    this.closeModal.emit();
   }
 
   onSubmit(): void {
@@ -144,25 +169,67 @@ export class NewPeopleComponent implements OnInit {
         });
       }
 
+      // Mostrar SweetAlert de carga
+      Swal.fire({
+        title: 'Creando persona',
+        text: 'Por favor espere...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       // Enviar a la API
       this.personasService.addPersona(personaData).subscribe({
         next: (response) => {
           console.log('Persona creada:');
           this.isLoading = false;
-          this.onClose(); // Cierra el modal y emite evento
+
+          // Cerrar SweetAlert de carga
+          Swal.close();
+
+          // Cerrar el modal primero
+          this.resetForm();
+          this.closeModal.emit();
+
+          // Mostrar SweetAlert de éxito después de cerrar el modal
+          setTimeout(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'La persona ha sido creada correctamente',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#4CAF50'
+            });
+          }, 100);
         },
         error: (error) => {
           console.error('Error al crear persona:', error);
           this.isLoading = false;
 
-          if (error.status === 400) {
-            this.errorMessage = error.error.message || 'Datos inválidos';
-          } else {
-            this.errorMessage = 'Error al crear la persona. Intente nuevamente.';
-          }
+          // Cerrar SweetAlert de carga
+          Swal.close();
+
+          // Mostrar SweetAlert de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.error?.message || 'Error al crear la persona',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#f44336'
+          });
         }
       });
     } else {
+      // Mostrar SweetAlert de validación
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor complete todos los campos requeridos',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#FFA500'
+      });
+
       // Marcar campos como touched para mostrar errores
       Object.keys(this.personaForm.controls).forEach(key => {
         this.personaForm.get(key)?.markAsTouched();

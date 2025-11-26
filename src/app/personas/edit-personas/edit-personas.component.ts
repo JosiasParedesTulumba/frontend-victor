@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Persona } from '../interfaces/persona.interface';
 import { PersonasService } from '../services/personas.service';
 import { RolesService } from '../services/roles.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-personas',
@@ -99,6 +100,7 @@ export class EditPersonasComponent implements OnInit, OnChanges {
       },
       error: (error) => {
         console.error('Error al cargar roles:', error);
+        Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
         this.roles = [
           { rol_id: 1, nombre_rol: 'ADMIN', estado_rol: 1 },
           { rol_id: 2, nombre_rol: 'EMPLEADO', estado_rol: 1 },
@@ -119,9 +121,29 @@ export class EditPersonasComponent implements OnInit, OnChanges {
   }
 
   onClose(): void {
-    this.personaForm.reset();
-    this.errorMessage = '';
-    this.closeModal.emit();
+    // Verificar si el formulario tiene cambios sin guardar
+    if (this.personaForm.dirty) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Tienes cambios sin guardar. ¿Deseas salir de todos modos?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.personaForm.reset();
+          this.errorMessage = '';
+          this.closeModal.emit();
+        }
+      });
+    } else {
+      this.personaForm.reset();
+      this.errorMessage = '';
+      this.closeModal.emit();
+    }
   }
 
   onSubmit(): void {
@@ -156,16 +178,64 @@ export class EditPersonasComponent implements OnInit, OnChanges {
         }
       }
 
+      // Mostrar SweetAlert de carga
+      Swal.fire({
+        title: 'Actualizando persona',
+        text: 'Por favor espere...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       this.personasService.actualizarPersona(this.persona.persona_id, updateData).subscribe({
         next: () => {
           this.isLoading = false;
-          this.onClose();
+
+          // Cerrar SweetAlert de carga
+          Swal.close();
+
+          // Cerrar el modal primero
+          this.personaForm.reset();
+          this.errorMessage = '';
+          this.closeModal.emit();
+
+          // Mostrar SweetAlert de éxito después de cerrar el modal
+          setTimeout(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'La persona ha sido actualizada correctamente',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#4CAF50'
+            });
+          }, 100);
         },
         error: (error) => {
           console.error('Error al actualizar persona:', error);
           this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error al actualizar la persona';
+
+          // Cerrar SweetAlert de carga
+          Swal.close();
+
+          // Mostrar SweetAlert de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.error?.message || 'Error al actualizar la persona',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#f44336'
+          });
         }
+      });
+    } else {
+      // Mostrar SweetAlert de validación
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor complete todos los campos requeridos',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#FFA500'
       });
     }
   }

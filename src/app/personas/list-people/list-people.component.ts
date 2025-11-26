@@ -3,6 +3,7 @@ import { PersonasService } from '../services/personas.service';
 import { Persona } from '../interfaces/persona.interface';
 import { AuthService } from '../../auth/services/auth.service';
 import { PermisosService } from '../../auth/services/permisos.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-list-people',
@@ -66,6 +67,7 @@ export class ListPeopleComponent implements OnInit {
         console.error('Error al cargar personas:', error);
         this.errorMessage = 'Error al cargar las personas. Verifique su conexión.';
         this.isLoading = false;
+        Swal.fire('Error', 'No se pudieron cargar las personas', 'error');
       }
     });
   }
@@ -130,19 +132,31 @@ export class ListPeopleComponent implements OnInit {
 
   // Eliminar persona
   eliminarPersona(persona: Persona): void {  // Cambiado: ahora recibe el objeto persona completo
-    if (confirm(`¿Está seguro de eliminar a ${persona.nombres} ${persona.apellidos}?`)) {
-      if (persona.persona_id) {
+    if (!persona.persona_id) return;
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Deseas eliminar a ${persona.nombres} ${persona.apellidos}? Esta acción no se puede deshacer`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed && persona.persona_id) {
         this.personasService.eliminarPersona(persona.persona_id).subscribe({
           next: () => {
+            Swal.fire('¡Eliminado!', 'La persona ha sido eliminada.', 'success');
             this.cargarPersonas(); // Recargar lista
           },
           error: (error) => {
             console.error('Error al eliminar persona:', error);
-            alert('Error al eliminar la persona');
+            Swal.fire('Error', 'No se pudo eliminar la persona', 'error');
           }
         });
       }
-    }
+    });
   }
 
   // Métodos para cambiar entre clientes y empleados
@@ -163,5 +177,5 @@ export class ListPeopleComponent implements OnInit {
   mostrarAcciones(): boolean {
     return !this.permisos.esSupervisor() && !this.permisos.esEmpleado();
   }
-  
+
 }

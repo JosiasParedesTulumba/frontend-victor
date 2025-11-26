@@ -3,6 +3,7 @@ import { HVehiculo } from '../interfaces/h-vehiculo.interface';
 import { HistorialService } from '../services/historial.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { PermisosService } from '../../auth/services/permisos.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-list-historial',
@@ -44,6 +45,7 @@ export class ListHistorialComponent implements OnInit {
         console.error('Error al cargar historiales:', error);
         this.error = 'Error al cargar el historial de vehículos';
         this.loading = false;
+        Swal.fire('Error', 'No se pudo cargar el historial de vehículos', 'error');
       }
     });
   }
@@ -159,17 +161,30 @@ export class ListHistorialComponent implements OnInit {
 
   // Eliminar historial
   eliminarHistorial(historial: HVehiculo): void {
-    if (confirm('¿Está seguro de que desea eliminar este registro de historial?')) {
-      this.historialService.remove(historial.historial_id).subscribe({
-        next: () => {
-          this.loadHistoriales();
-        },
-        error: (error) => {
-          console.error('Error al eliminar historial:', error);
-          this.error = 'Error al eliminar el registro de historial';
-        }
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas eliminar este registro de historial? Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.historialService.remove(historial.historial_id).subscribe({
+          next: () => {
+            Swal.fire('¡Eliminado!', 'El registro de historial ha sido eliminado.', 'success');
+            this.loadHistoriales();
+          },
+          error: (error) => {
+            console.error('Error al eliminar historial:', error);
+            this.error = 'Error al eliminar el registro de historial';
+            Swal.fire('Error', 'No se pudo eliminar el registro de historial', 'error');
+          }
+        });
+      }
+    });
   }
 
   puedesCrearHistorial(): boolean {

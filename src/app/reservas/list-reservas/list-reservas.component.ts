@@ -3,6 +3,7 @@ import { ReservasService } from '../services/reservas.service';
 import { Reserva } from '../interfaces/reserva.interface';
 import { AuthService } from '../../auth/services/auth.service';
 import { PermisosService } from '../../auth/services/permisos.service';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: false,
@@ -25,7 +26,7 @@ export class ListReservasComponent implements OnInit {
   constructor(
     private reservasService: ReservasService,
     public permisos: PermisosService
-  ) {}  
+  ) { }
 
   ngOnInit() {
     this.cargarReservas();
@@ -70,21 +71,35 @@ export class ListReservasComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar reservas:', error);
+        Swal.fire('Error', 'No se pudieron cargar las reservas', 'error');
       }
     });
   }
 
   eliminarReserva(id: number) {
-    if (confirm('¿Está seguro de eliminar esta reserva?')) {
-      this.reservasService.eliminarReserva(id).subscribe({
-        next: () => {
-          this.cargarReservas();
-        },
-        error: (error) => {
-          console.error('Error al eliminar reserva:', error);
-        }
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.reservasService.eliminarReserva(id).subscribe({
+          next: () => {
+            Swal.fire('¡Eliminado!', 'La reserva ha sido eliminada.', 'success');
+            this.cargarReservas();
+          },
+          error: (error) => {
+            console.error('Error al eliminar reserva:', error);
+            Swal.fire('Error', 'No se pudo eliminar la reserva', 'error');
+          }
+        });
+      }
+    });
   }
 
   getEstadoTexto(estado: number): string {

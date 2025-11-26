@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,13 @@ export class LoginComponent {
 
   onSubmit = () => {
     if (!this.username || !this.password) {
-      this.errorMessage = 'Por favor complete todos los campos';
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete todos los campos',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#FFA500'
+      });
       return;
     }
 
@@ -35,20 +42,46 @@ export class LoginComponent {
       contrasena: this.password,
     };
 
+    // Mostrar SweetAlert de carga
+    Swal.fire({
+      title: 'Iniciando sesión',
+      text: 'Por favor espere...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.isLoading = false;
+
+        // Cerrar SweetAlert de carga
+        Swal.close();
+
+        // Navegar al dashboard
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         console.error('Error en login:', error);
         this.isLoading = false;
+
+        // Cerrar SweetAlert de carga
+        Swal.close();
+
+        // Mostrar SweetAlert de error
+        let errorMessage = 'Error de conexión. Verifique que el servidor esté funcionando.';
         if (error.status === 401) {
-          this.errorMessage = 'Credenciales incorrectas';
-        } else {
-          this.errorMessage =
-            'Error de conexión. Verifique que el servidor esté funcionando.';
+          errorMessage = 'Credenciales incorrectas';
         }
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al iniciar sesión',
+          text: errorMessage,
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#f44336'
+        });
       },
     });
   };
