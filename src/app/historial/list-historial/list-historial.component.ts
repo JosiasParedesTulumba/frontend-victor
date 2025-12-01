@@ -19,7 +19,7 @@ export class ListHistorialComponent implements OnInit {
   loading = false;
   error = '';
 
-  filtroTipoEvento: string = '';
+  filtroMatricula: string = '';
   filtroFechaEvento: string = '';
 
   constructor(
@@ -93,9 +93,9 @@ export class ListHistorialComponent implements OnInit {
   get historialesFiltrados(): HVehiculo[] {
     let filtered = this.historiales;
 
-    if (this.filtroTipoEvento) {
+    if (this.filtroMatricula) {
       filtered = filtered.filter(h =>
-        h.tipo_evento.toLowerCase().includes(this.filtroTipoEvento.toLowerCase())
+        (h.vehiculo?.matricula || '').toLowerCase().includes(this.filtroMatricula.toLowerCase())
       );
     }
 
@@ -111,7 +111,7 @@ export class ListHistorialComponent implements OnInit {
 
   // Limpiar filtros
   clearFilters(): void {
-    this.filtroTipoEvento = '';
+    this.filtroMatricula = '';
     this.filtroFechaEvento = '';
   }
 

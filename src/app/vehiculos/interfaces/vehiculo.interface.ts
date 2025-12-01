@@ -7,7 +7,7 @@ export interface Vehiculo {
   precio?: number;
   capacidad?: number;
   fechaRegistro?: string;
-  estadoActual?: 'Disponible' | 'Reservado' | 'Mantenimiento';
+  estadoActual?: 'Disponible' | 'Reservado' | 'Ocupado';
   estado?: 'Activo' | 'Inactivo';
 
   // Campos de la API

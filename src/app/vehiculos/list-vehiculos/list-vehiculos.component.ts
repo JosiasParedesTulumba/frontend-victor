@@ -142,7 +142,7 @@ export class ListVehiculosComponent implements OnInit {
         (v.matricula ?? '').toLowerCase().includes(this.filtroMatricula.toLowerCase());
 
       const cumpleFiltroEstado = !this.filtroEstado ||
-        v.estado === this.filtroEstado;
+        v.estadoActual === this.filtroEstado;
 
       const cumpleFiltroAnio = !this.filtroAnio ||
         v.anio?.toString() === this.filtroAnio;

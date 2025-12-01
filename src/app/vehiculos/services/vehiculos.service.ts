@@ -145,9 +145,9 @@ export class VehiculosService {
   }
 
   // Mapear estado numérico a texto
-  private mapearEstadoVehiculo(estado: number): 'Disponible' | 'Reservado' | 'Mantenimiento' {
-    const estados: { [key: number]: 'Disponible' | 'Reservado' | 'Mantenimiento' } = {
-      1: 'Mantenimiento',
+  private mapearEstadoVehiculo(estado: number): 'Disponible' | 'Reservado' | 'Ocupado' {
+    const estados: { [key: number]: 'Disponible' | 'Reservado' | 'Ocupado' } = {
+      1: 'Ocupado',
       2: 'Reservado',
       3: 'Disponible'
     };
@@ -160,6 +160,4 @@ export class VehiculosService {
       { headers: this.authService.getAuthHeaders() }
     );
   }
-
-  
-} 
+}

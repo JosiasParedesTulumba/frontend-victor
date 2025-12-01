@@ -26,7 +26,7 @@ export class ListPagosComponent implements OnInit {
     private pagosService: PagosService,
     private authService: AuthService,
     public permisos: PermisosService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.cargarPagos();
@@ -55,7 +55,7 @@ export class ListPagosComponent implements OnInit {
 
   eliminarPago(pago: Pago) {
     if (!pago.pago_id) return;
-    
+
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción no se puede deshacer',
@@ -105,10 +105,37 @@ export class ListPagosComponent implements OnInit {
   getEstadoPagoText(estado: number): string {
     return estado === 1 ? 'Completado' : 'Pendiente';
   }
-  
+
   puedesCrearPago(): boolean {
     const user = this.authService.getCurrentUser();
     return user?.rol !== 'SUPERVISOR';
+  }
+
+  get pagosFiltrados(): Pago[] {
+    return this.pagos.filter(pago => {
+      // Filtro por DNI del cliente
+      if (this.filtroDniCliente && !pago.reserva.persona.dni.toLowerCase().includes(this.filtroDniCliente.toLowerCase())) {
+        return false;
+      }
+
+      // Filtro por fecha (año)
+      if (this.filtroFecha) {
+        const anioPago = new Date(pago.fecha_pago).getFullYear().toString();
+        if (anioPago !== this.filtroFecha) {
+          return false;
+        }
+      }
+
+      // Filtro por método de pago
+      if (this.filtroMetodo) {
+        const metodoTexto = this.getMetodoPagoText(pago.metodo_pago);
+        if (metodoTexto !== this.filtroMetodo) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   }
 
   mostrarAcciones(): boolean {
