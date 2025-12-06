@@ -2,54 +2,165 @@
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h5 class="modal-title">Editar Vehículo</h5>
-      <button type="button" class="close-btn" (click)="onClose()">
+      <button type="button" class="close-btn" (click)="onClose()" [disabled]="isLoading">
         <i class="bx bx-x"></i>
       </button>
     </div>
+
     <div class="modal-body">
+      <!-- Mensaje de error global -->
+      <div *ngIf="mensajeError" class="alert alert-danger mb-3">
+        {{ mensajeError }}
+      </div>
       <form [formGroup]="vehiculoForm" (ngSubmit)="onSubmit()">
         <div class="form-row">
+          <!-- Columna izquierda -->
           <div class="form-column">
             <div class="mb-3">
-              <label for="modelo" class="form-label">Modelo:</label>
-              <input type="text" class="form-control" id="modelo" formControlName="modelo" placeholder="Ej. Toyota Corolla">
+              <label for="modelo" class="form-label">Modelo</label>
+              <input type="text" class="form-control" id="modelo" formControlName="modelo"
+                placeholder="Ej. Toyota Corolla" [class.is-invalid]="
+                  vehiculoForm.get('modelo')?.invalid &&
+                  vehiculoForm.get('modelo')?.touched
+                " />
+              <div class="invalid-feedback" *ngIf="
+                  vehiculoForm.get('modelo')?.invalid &&
+                  vehiculoForm.get('modelo')?.touched
+                ">
+                El modelo es requerido
+              </div>
             </div>
+
             <div class="mb-3">
-              <label for="matricula" class="form-label">Matrícula:</label>
-              <input type="text" class="form-control" id="matricula" formControlName="matricula" [disabled]="true">
+              <label for="anio" class="form-label">Año</label>
+              <input type="number" class="form-control" id="anio" formControlName="anio" placeholder="Ej. 2022"
+                [class.is-invalid]="
+                  vehiculoForm.get('anio')?.invalid &&
+                  vehiculoForm.get('anio')?.touched
+                " />
+              <div class="invalid-feedback" *ngIf="
+                  vehiculoForm.get('anio')?.invalid &&
+                  vehiculoForm.get('anio')?.touched
+                ">
+                <span *ngIf="vehiculoForm.get('anio')?.errors?.['required']">El año es requerido</span>
+                <span *ngIf="vehiculoForm.get('anio')?.errors?.['min'] || vehiculoForm.get('anio')?.errors?.['max']">
+                  Año inválido
+                </span>
+              </div>
             </div>
+
             <div class="mb-3">
-              <label for="tipo" class="form-label">Tipo:</label>
-              <select class="form-select" id="tipo" formControlName="tipo">
-                <option value="Seleccionar tipo">Seleccionar tipo</option>
-                <option value="Sedan">Sedan</option>
-                <option value="Camioneta">Camioneta</option>
-                <option value="Van">Van</option>
-              </select>
+              <label for="precio" class="form-label">Precio por Día</label>
+              <input type="number" step="0.01" class="form-control" id="precio" formControlName="precio"
+                placeholder="Ej. 500.00" [class.is-invalid]="
+                  vehiculoForm.get('precio')?.invalid &&
+                  vehiculoForm.get('precio')?.touched
+                " />
+              <div class="invalid-feedback" *ngIf="
+                  vehiculoForm.get('precio')?.invalid &&
+                  vehiculoForm.get('precio')?.touched
+                ">
+                <span *ngIf="vehiculoForm.get('precio')?.errors?.['required']">El precio es requerido</span>
+                <span *ngIf="vehiculoForm.get('precio')?.errors?.['min']">
+                  El precio debe ser mayor a 0</span>
+              </div>
             </div>
           </div>
+
+          <!-- Columna derecha -->
           <div class="form-column">
             <div class="mb-3">
-              <label for="anio" class="form-label">Año:</label>
-              <input type="number" class="form-control" id="anio" formControlName="anio" placeholder="Ej. 2023">
+              <label class="form-label">Matrícula</label>
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-grow-1">
+                  <input type="text" class="form-control text-uppercase text-center" id="matriculaPart1"
+                    formControlName="matriculaPart1" placeholder="ABC" maxlength="3"
+                    (input)="onMatriculaInput('matriculaPart1')" [class.is-invalid]="
+                      (vehiculoForm.get('matriculaPart1')?.invalid &&
+                      vehiculoForm.get('matriculaPart1')?.touched) ||
+                      (vehiculoForm.hasError('invalidMatriculaLength') && 
+                      vehiculoForm.get('matriculaPart1')?.touched)
+                    " />
+                </div>
+                <div class="fw-bold">-</div>
+                <div class="flex-grow-1">
+                  <input type="text" class="form-control text-uppercase text-center" id="matriculaPart2"
+                    formControlName="matriculaPart2" placeholder="123" maxlength="3"
+                    (input)="onMatriculaInput('matriculaPart2')" [class.is-invalid]="
+                      (vehiculoForm.get('matriculaPart2')?.invalid &&
+                      vehiculoForm.get('matriculaPart2')?.touched) ||
+                      (vehiculoForm.hasError('invalidMatriculaLength') && 
+                      vehiculoForm.get('matriculaPart2')?.touched)
+                    " />
+                </div>
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="vehiculoForm.hasError('invalidMatriculaLength')">
+                La matrícula debe tener 3 caracteres en cada campo
+              </div>
+              <div class="invalid-feedback d-block"
+                *ngIf="vehiculoForm.get('matriculaPart1')?.hasError('required') && vehiculoForm.get('matriculaPart1')?.touched">
+                La primera parte de la matrícula es requerida
+              </div>
+              <div class="invalid-feedback d-block"
+                *ngIf="vehiculoForm.get('matriculaPart2')?.hasError('required') && vehiculoForm.get('matriculaPart2')?.touched">
+                La segunda parte de la matrícula es requerida
+              </div>
             </div>
+
             <div class="mb-3">
-              <label for="precio" class="form-label">Precio:</label>
-              <input type="number" class="form-control" id="precio" formControlName="precio" placeholder="Ej. 100">
+              <label for="tipo" class="form-label">Tipo Vehículo</label>
+              <div class="select-container">
+                <select class="form-select" id="tipo" formControlName="tipo" [class.is-invalid]="
+                    vehiculoForm.get('tipo')?.invalid &&
+                    vehiculoForm.get('tipo')?.touched
+                  ">
+                  <option value="Seleccionar tipo">Seleccionar tipo</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="Camioneta">Camioneta</option>
+                  <option value="Van">Van</option>
+                </select>
+                <i class="bx bx-chevron-down select-arrow"></i>
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="
+                  vehiculoForm.get('tipo')?.invalid &&
+                  vehiculoForm.get('tipo')?.touched
+                ">
+                Debe seleccionar un tipo de vehículo
+              </div>
             </div>
+
             <div class="mb-3">
-              <label for="capacidad" class="form-label">Capacidad:</label>
-              <input type="number" class="form-control" id="capacidad" formControlName="capacidad" placeholder="Ej. 5">
+              <label for="capacidad" class="form-label">Capacidad</label>
+              <input type="number" class="form-control" id="capacidad" formControlName="capacidad" placeholder="Ej. 5"
+                [class.is-invalid]="
+                  vehiculoForm.get('capacidad')?.invalid &&
+                  vehiculoForm.get('capacidad')?.touched
+                " />
+              <div class="invalid-feedback" *ngIf="
+                  vehiculoForm.get('capacidad')?.invalid &&
+                  vehiculoForm.get('capacidad')?.touched
+                ">
+                <span *ngIf="vehiculoForm.get('capacidad')?.errors?.['required']">La capacidad es requerida</span>
+                <span *ngIf="vehiculoForm.get('capacidad')?.errors?.['min']">La capacidad debe ser al menos 1</span>
+              </div>
             </div>
           </div>
         </div>
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
-          <button type="submit" class="btn btn-success custom-btn">
-            <i class="bx bx-save me-1"></i> Guardar Cambios
+          <button type="button" class="btn btn-secondary" (click)="onClose()" [disabled]="isLoading">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success custom-btn" [disabled]="isLoading || vehiculoForm.invalid">
+            <span *ngIf="isLoading">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Guardando...
+            </span>
+            <span *ngIf="!isLoading">
+              <i class="bx bx-save me-1"></i> Guardar Cambios
+            </span>
           </button>
         </div>
-        <div *ngIf="mensajeError" class="alert alert-danger mt-2">{{ mensajeError }}</div>
       </form>
     </div>
   </div>

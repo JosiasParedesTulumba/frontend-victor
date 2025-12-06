@@ -105,19 +105,29 @@ export class VehiculosService {
   private mapearVehiculoParaAPI(vehiculo: any, esActualizacion = false): any {
     const usuarioActual = this.authService.getCurrentUser();
 
+    // Si es actualización, solo incluir campos presentes
+    if (esActualizacion) {
+      const datos: any = {};
+      if (vehiculo.modelo !== undefined) datos.modelo = vehiculo.modelo;
+      if (vehiculo.matricula !== undefined) datos.matricula = vehiculo.matricula;
+      if (vehiculo.anio !== undefined) datos.anio = parseInt(vehiculo.anio);
+      if (vehiculo.tipo !== undefined) datos.tipo_vehiculo = this.obtenerTipoVehiculoNumero(vehiculo.tipo);
+      if (vehiculo.precio !== undefined) datos.precio = parseFloat(vehiculo.precio);
+      if (vehiculo.capacidad !== undefined) datos.capacidad = parseInt(vehiculo.capacidad);
+      if (vehiculo.estado_actual !== undefined) datos.estado_actual = vehiculo.estado_actual;
+      return datos;
+    }
+
+    // Si es creación, comportamiento original
     const datos: any = {
       modelo: vehiculo.modelo,
       matricula: vehiculo.matricula,
       anio: parseInt(vehiculo.anio),
       tipo_vehiculo: this.obtenerTipoVehiculoNumero(vehiculo.tipo),
       precio: parseFloat(vehiculo.precio),
-      capacidad: parseInt(vehiculo.capacidad)
+      capacidad: parseInt(vehiculo.capacidad),
+      usuario_id: usuarioActual?.usuario_id || 1
     };
-
-    // Solo agregar usuario_id al crear
-    if (!esActualizacion) {
-      datos.usuario_id = usuarioActual?.usuario_id || 1;
-    }
 
     return datos;
   }

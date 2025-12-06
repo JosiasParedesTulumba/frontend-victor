@@ -6,10 +6,52 @@
 }
 
 .dashboard-card {
-  width: 220px;
-  height: 220px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.icon-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 48px 0 rgba(0,0,0,0.85), 0 4px 16px 0 rgba(0,0,0,0.55);
+  font-size: 1.8rem;
+}
+
+/* Colores específicos */
+.bg-light-info {
+  background-color: rgba(25, 194, 209, 0.1);
+}
+
+.text-info {
+  color: #19c2d1;
+}
+
+.bg-light-purple {
+  background-color: rgba(162, 89, 230, 0.1);
+}
+
+.text-purple {
+  color: #a259e6;
+}
+
+.text-container h5 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.text-container h2 {
+  font-size: 2rem;
 }

@@ -28,7 +28,7 @@ export class EditVehiculosComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['vehiculo'] && this.vehiculo) {
       this.initForm();
-      this.vehiculoForm.patchValue(this.vehiculo);
+      this.loadVehiculoData();
     }
   }
 
@@ -40,15 +40,74 @@ export class EditVehiculosComponent implements OnInit, OnChanges {
     return null;
   }
 
+  matriculaValidator(control: AbstractControl): ValidationErrors | null {
+    const part1 = control.get('matriculaPart1')?.value;
+    const part2 = control.get('matriculaPart2')?.value;
+
+    if (part1 && part2 && (part1.length !== 3 || part2.length !== 3)) {
+      return { invalidMatriculaLength: true };
+    }
+    return null;
+  }
+
   initForm() {
     this.vehiculoForm = this.fb.group({
       modelo: ['', Validators.required],
-      matricula: ['', Validators.required],
+      matriculaPart1: ['', [Validators.required, Validators.pattern('^[A-Z0-9]{0,3}$')]],
+      matriculaPart2: ['', [Validators.required, Validators.pattern('^[A-Z0-9]{0,3}$')]],
       anio: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
       tipo: ['Seleccionar tipo', [Validators.required, this.tipoValidator]],
       precio: ['', [Validators.required, Validators.min(0)]],
       capacidad: ['', [Validators.required, Validators.min(1)]]
-    });
+    }, { validators: this.matriculaValidator });
+  }
+
+  loadVehiculoData() {
+    if (this.vehiculo) {
+      // Dividir la matrícula en dos partes
+      const matriculaParts = this.vehiculo.matricula?.split('-') || ['', ''];
+
+      this.vehiculoForm.patchValue({
+        modelo: this.vehiculo.modelo,
+        matriculaPart1: matriculaParts[0] || '',
+        matriculaPart2: matriculaParts[1] || '',
+        anio: this.vehiculo.anio,
+        tipo: this.vehiculo.tipo,
+        precio: this.vehiculo.precio,
+        capacidad: this.vehiculo.capacidad
+      });
+    }
+  }
+
+  onMatriculaInput(part: 'matriculaPart1' | 'matriculaPart2') {
+    const control = this.vehiculoForm.get(part);
+    if (control) {
+      let value = control.value.toUpperCase();
+      // Remove any non-alphanumeric characters
+      value = value.replace(/[^A-Z0-9]/g, '');
+      // Limit to 3 characters
+      value = value.substring(0, 3);
+      control.setValue(value, { emitEvent: false });
+
+      // Auto-focus to next input if current part is full
+      if (value.length === 3) {
+        const nextPart = part === 'matriculaPart1' ? 'matriculaPart2' : null;
+        if (nextPart) {
+          setTimeout(() => {
+            const element = document.getElementById(nextPart);
+            if (element) {
+              element.focus();
+            }
+          });
+        }
+      }
+    }
+  }
+
+  private combineMatricula(): string {
+    const part1 = this.vehiculoForm.get('matriculaPart1')?.value || '';
+    const part2 = this.vehiculoForm.get('matriculaPart2')?.value || '';
+    return `${part1}-${part2}`;
   }
 
   onClose() {
@@ -94,23 +153,27 @@ export class EditVehiculosComponent implements OnInit, OnChanges {
         }
       });
 
-      const vehiculoEditado = this.vehiculoForm.value;
+      // Combine the matricula parts before submitting
+      const formValue = { ...this.vehiculoForm.value };
+      formValue.matricula = this.combineMatricula();
+      delete formValue.matriculaPart1;
+      delete formValue.matriculaPart2;
 
       this.vehiculosService.actualizarVehiculo(
         this.vehiculo.vehiculo_id,
-        vehiculoEditado
+        formValue
       ).subscribe({
         next: (response) => {
           console.log('Vehículo actualizado:', response);
           this.isLoading = false;
-          
+
           // Cerrar SweetAlert de carga
           Swal.close();
-          
+
           // Cerrar el modal primero
           this.vehiculoForm.reset();
           this.closeModal.emit();
-          
+
           // Mostrar SweetAlert de éxito después de cerrar el modal
           setTimeout(() => {
             Swal.fire({
@@ -125,10 +188,10 @@ export class EditVehiculosComponent implements OnInit, OnChanges {
         error: (error) => {
           console.error('Error al actualizar:', error);
           this.isLoading = false;
-          
+
           // Cerrar SweetAlert de carga
           Swal.close();
-          
+
           // Mostrar SweetAlert de error
           Swal.fire({
             icon: 'error',
@@ -148,7 +211,7 @@ export class EditVehiculosComponent implements OnInit, OnChanges {
         confirmButtonText: 'Entendido',
         confirmButtonColor: '#FFA500'
       });
-      
+
       // Marcar los campos como tocados para mostrar errores
       Object.keys(this.vehiculoForm.controls).forEach(key => {
         this.vehiculoForm.get(key)?.markAsTouched();

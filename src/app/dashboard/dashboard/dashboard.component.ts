@@ -10,6 +10,7 @@ import { DashboardService } from '../services/dashboard.service';
 export class DashboardComponent implements OnInit {
 
   mensaje: string = '';
+  reservasActivas: string = '';
 
   constructor(
     private dashboardService: DashboardService
@@ -21,8 +22,17 @@ export class DashboardComponent implements OnInit {
         this.mensaje = data.cantidad;
       },
       (error) => {
-        console.error('Error al cargar los datos llamados', error);
+        console.error('Error al cargar vehículos disponibles', error);
       }
-    )
+    );
+
+    this.dashboardService.getReservasActivas().subscribe(
+      (data) => {
+        this.reservasActivas = data.cantidad;
+      },
+      (error) => {
+        console.error('Error al cargar reservas activas', error);
+      }
+    );
   }
 }

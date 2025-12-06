@@ -76,7 +76,11 @@
         <td class="text-center">{{ vehiculo.tipo }}</td>
         <td class="text-center">{{ vehiculo.precio }}</td>
         <td class="text-center">{{ vehiculo.capacidad }}</td>
-        <td class="text-center">{{ vehiculo.estadoActual || '-' }}</td>
+        <td class="text-center">
+          <span class="badge" [ngClass]="vehiculo.estado_actual === 1 ? 'bg-success' : 'bg-secondary'">
+            {{ vehiculo.estado_actual === 1 ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
         <td class="text-center">
           <span [ngClass]="vehiculo.estado === 'Activo' ? 'text-success' : 'text-danger'">
             {{ vehiculo.estado }}
@@ -86,12 +90,16 @@
           <button class="btn btn-link text-primary p-0 me-2" (click)="abrirModalEditar(vehiculo)" title="Editar">
             <i class='bx bx-edit'></i>
           </button>
-          <!--<button class="btn btn-link text-primary p-0 me-2" (click)="alternarEstado(vehiculo.matricula)" title="Cambiar estado">
+
+          <!-- Botón Reactivar (solo si está inactivo) -->
+          <button *ngIf="vehiculo.estado_actual === 0 && permisos.puedeEliminarVehiculo()"
+            class="btn btn-link text-success p-0 me-2" (click)="reactivarVehiculo(vehiculo)" title="Reactivar">
             <i class='bx bx-refresh'></i>
           </button>
-          -->
-          <button *ngIf="permisos.puedeEliminarVehiculo()" class="btn btn-link text-danger p-0"
-            (click)="eliminarVehiculo(vehiculo)" title="Eliminar">
+
+          <!-- Botón Eliminar (solo si está activo) -->
+          <button *ngIf="vehiculo.estado_actual === 1 && permisos.puedeEliminarVehiculo()"
+            class="btn btn-link text-danger p-0" (click)="eliminarVehiculo(vehiculo)" title="Marcar como inactivo">
             <i class='bx bx-trash'></i>
           </button>
         </td>

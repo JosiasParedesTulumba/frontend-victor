@@ -67,23 +67,63 @@ export class ListVehiculosComponent implements OnInit {
 
     Swal.fire({
       title: '¿Estás seguro?',
-      text: `¿Deseas eliminar el vehículo ${vehiculo.modelo}? Esta acción no se puede deshacer`,
+      text: `¿Deseas marcar como inactivo el vehículo ${vehiculo.modelo}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonText: 'Sí, marcar como inactivo',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed && vehiculo.vehiculo_id) {
         this.vehiculosService.eliminarVehiculo(vehiculo.vehiculo_id).subscribe({
-          next: () => {
-            Swal.fire('¡Eliminado!', 'El vehículo ha sido eliminado.', 'success');
+          next: (response) => {
+            Swal.fire(
+              '¡Marcado como inactivo!',
+              'El vehículo ha sido marcado como inactivo correctamente.',
+              'success'
+            );
             this.cargarVehiculos();
           },
           error: (error) => {
             console.error('Error al eliminar:', error);
-            Swal.fire('Error', 'No se pudo eliminar el vehículo', 'error');
+            const mensajeError = error.error?.message ||
+              'No se pudo marcar el vehículo como inactivo';
+            Swal.fire('Error', mensajeError, 'error');
+          }
+        });
+      }
+    });
+  }
+
+  reactivarVehiculo(vehiculo: Vehiculo) {
+    if (!vehiculo.vehiculo_id) return;
+
+    Swal.fire({
+      title: '¿Reactivar vehículo?',
+      text: `¿Deseas reactivar el vehículo ${vehiculo.modelo}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, reactivar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed && vehiculo.vehiculo_id) {
+        this.vehiculosService.actualizarVehiculo(vehiculo.vehiculo_id, {
+          estado_actual: 1
+        }).subscribe({
+          next: () => {
+            Swal.fire(
+              '¡Reactivado!',
+              'El vehículo ha sido reactivado correctamente.',
+              'success'
+            );
+            this.cargarVehiculos();
+          },
+          error: (error) => {
+            console.error('Error al reactivar:', error);
+            Swal.fire('Error', 'No se pudo reactivar el vehículo', 'error');
           }
         });
       }

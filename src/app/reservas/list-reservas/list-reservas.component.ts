@@ -103,7 +103,25 @@ export class ListReservasComponent implements OnInit {
   }
 
   getEstadoTexto(estado: number): string {
-    return estado === 1 ? 'Activa' : 'Cancelada';
+    switch (estado) {
+      case 0: return 'Cancelada';
+      case 1: return 'Pendiente';
+      case 2: return 'Confirmada';
+      case 3: return 'En Curso';
+      case 4: return 'Completada';
+      default: return 'Desconocido';
+    }
+  }
+
+  getEstadoColor(estado: number): string {
+    switch (estado) {
+      case 0: return 'danger';    // Rojo
+      case 1: return 'warning';   // Amarillo
+      case 2: return 'success';   // Verde
+      case 3: return 'primary';   // Azul
+      case 4: return 'secondary'; // Gris
+      default: return 'light';
+    }
   }
 
   formatearFecha(fecha: Date): string {
@@ -137,5 +155,78 @@ export class ListReservasComponent implements OnInit {
 
   mostrarAcciones(): boolean {
     return !this.permisos.esSupervisor();
+  }
+
+  confirmarReserva(reserva: Reserva) {
+    if (reserva.estado_reserva !== 1) {
+      Swal.fire('Error', 'Solo se pueden confirmar reservas pendientes', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Confirmar reserva?',
+      text: 'La reserva será marcada como confirmada y el vehículo quedará bloqueado',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, confirmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.reservasService.confirmarReserva(reserva.reserva_id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Confirmada!',
+              text: 'La reserva ha sido confirmada exitosamente',
+              confirmButtonColor: '#28a745'
+            });
+            this.cargarReservas();
+          },
+          error: (error) => {
+            console.error('Error al confirmar reserva:', error);
+            Swal.fire('Error', 'No se pudo confirmar la reserva', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  cancelarReserva(reserva: Reserva) {
+    Swal.fire({
+      title: '¿Cancelar reserva?',
+      text: 'La reserva pasará al estado Cancelada y el vehículo quedará disponible',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, mantener',
+      confirmButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.reservasService.cancelarReserva(reserva.reserva_id).subscribe({
+          next: () => {
+            Swal.fire('¡Cancelada!', 'La reserva ha sido cancelada.', 'success');
+            this.cargarReservas();
+          },
+          error: (error) => {
+            console.error('Error al cancelar reserva:', error);
+            Swal.fire('Error', 'No se pudo cancelar la reserva', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  puedeConfirmar(reserva: Reserva): boolean {
+    // Solo PENDIENTE y con al menos un pago
+    return reserva.estado_reserva === 1 && !!(reserva.pago && reserva.pago.length > 0);
+  }
+
+  puedeCancelar(reserva: Reserva): boolean {
+    return [1, 2, 3].includes(reserva.estado_reserva); // PENDIENTE, CONFIRMADA, EN_CURSO
+  }
+
+  puedeEditar(reserva: Reserva): boolean {
+    return [1, 2].includes(reserva.estado_reserva); // PENDIENTE, CONFIRMADA
   }
 }

@@ -59,4 +59,24 @@ export class ReservasService {
       headers: this.authService.getAuthHeaders()
     });
   }
+
+  confirmarReserva(reservaId: number): Observable<Reserva> {
+    return this.http.patch<Reserva>(
+      `${this.apiUrl}/${reservaId}/confirmar`,
+      {},
+      { headers: this.authService.getAuthHeaders() }
+    );
+  }
+
+  getEstadisticas(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/estadisticas/globales`, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  getReservasPorEstado(estado: number): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/estado/${estado}`, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
 }

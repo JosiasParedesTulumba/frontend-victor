@@ -71,16 +71,26 @@
         <td class="text-center">{{ formatearFecha(reserva.fecha_inicio) }}</td>
         <td class="text-center">{{ formatearFecha(reserva.fecha_fin) }}</td>
         <td class="text-center">
-          <span [class]="reserva.estado_reserva === 1 ? 'badge bg-success' : 'badge bg-danger'">
+          <span class="badge bg-{{ getEstadoColor(reserva.estado_reserva) }}">
             {{ getEstadoTexto(reserva.estado_reserva) }}
           </span>
         </td>
         <td *ngIf="mostrarAcciones()" class="text-center">
-          <button class="btn btn-link text-primary p-0 me-2" (click)="abrirModalEditar(reserva)" title="Editar">
+          <!-- Botón Confirmar (solo para PENDIENTE) -->
+          <button *ngIf="puedeConfirmar(reserva)" (click)="confirmarReserva(reserva)"
+            class="btn btn-link text-success p-0 me-2" title="Confirmar reserva">
+            <i class="bx bx-check" style="font-size: 1.2rem;"></i>
+          </button>
+
+          <!-- Botón Editar (solo para PENDIENTE y CONFIRMADA) -->
+          <button *ngIf="puedeEditar(reserva)" (click)="abrirModalEditar(reserva)"
+            class="btn btn-link text-primary p-0 me-2" title="Editar reserva">
             <i class='bx bx-edit'></i>
           </button>
-          <button *ngIf="permisos.puedeEliminarReserva()" class="btn btn-link text-danger p-0"
-            (click)="eliminarReserva(reserva.reserva_id)" title="Eliminar">
+
+          <!-- Botón Cancelar (para PENDIENTE, CONFIRMADA, EN_CURSO) -->
+          <button *ngIf="puedeCancelar(reserva)" (click)="cancelarReserva(reserva)" class="btn btn-link text-danger p-0"
+            title="Cancelar reserva">
             <i class='bx bx-trash'></i>
           </button>
         </td>

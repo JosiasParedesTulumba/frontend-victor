@@ -5,7 +5,6 @@ import { Observable } from "rxjs";
 @Injectable({
     providedIn: 'root'
 })
-
 export class DashboardService {
 
     constructor(
@@ -18,4 +17,7 @@ export class DashboardService {
         return this.http.get(`${this.apiUrl}/cantidad/disponibles`);
     }
 
+    getReservasActivas(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/cantidad/reservas-activas`);
+    }
 }
