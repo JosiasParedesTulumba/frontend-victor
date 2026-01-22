@@ -33,6 +33,13 @@ export class PersonasService {
     });
   }
 
+  // Obtener empleados inactivos (solo admins)
+  getEmpleadosInactivos(): Observable<Persona[]> {
+    return this.http.get<Persona[]>(`${this.apiUrl}/empleados/inactivos`, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
   // Crear persona (cliente o empleado)
   addPersona(persona: any): Observable<Persona> {
     return this.http.post<Persona>(`${this.apiUrl}`, persona, {
@@ -50,6 +57,13 @@ export class PersonasService {
   // Eliminar persona
   eliminarPersona(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  // Reactivar persona
+  reactivarPersona(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/reactivar`, {}, {
       headers: this.authService.getAuthHeaders()
     });
   }

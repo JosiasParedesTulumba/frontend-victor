@@ -32,12 +32,16 @@ export class EditHistorialComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.initForm();
-    this.loadVehiculos();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['historialToEdit'] && this.historialToEdit) {
       this.loadHistorialData();
+    }
+    
+    // Solo cargar vehículos cuando el modal se abre
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
+      this.loadVehiculos();
     }
   }
 
@@ -57,11 +61,15 @@ export class EditHistorialComponent implements OnInit, OnChanges {
     this.vehiculosService.getMatriculas().subscribe({
       next: (vehiculos) => {
         this.vehiculos = vehiculos;
+        this.error = '';
       },
       error: (error) => {
         console.error('Error al cargar vehículos:', error);
         this.error = 'Error al cargar la lista de vehículos';
-        Swal.fire('Error', 'No se pudieron cargar los vehículos', 'error');
+        // Solo mostrar SweetAlert si el modal está abierto
+        if (this.isOpen) {
+          Swal.fire('Error', 'No se pudieron cargar los vehículos', 'error');
+        }
       }
     });
   }

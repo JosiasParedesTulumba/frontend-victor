@@ -52,6 +52,7 @@
         <th>Cliente</th>
         <th>N°_Reserva</th>
         <th>Monto</th>
+        <th>Ajuste</th>
         <th>Método</th>
         <th>Fecha</th>
         <th>Estado</th>
@@ -63,6 +64,12 @@
         <td class="text-center">{{ pago.reserva.persona.nombre }} {{ pago.reserva.persona.apellido }}</td>
         <td class="text-center">{{ pago.reserva.reserva_id }}</td>
         <td class="text-center">${{ pago.monto }}</td>
+        <td class="text-center">
+          <span *ngIf="tieneAjuste(pago)" [ngClass]="getClaseAjuste(pago)">
+            {{ getAjusteFormateado(pago) }}
+          </span>
+          <span *ngIf="!tieneAjuste(pago)" class="text-muted">-</span>
+        </td>
         <td class="text-center">{{ getMetodoPagoText(pago.metodo_pago) }}</td>
         <td class="text-center">{{ pago.fecha_pago | date: 'dd/MM/yyyy' }}</td>
         <td class="text-center">{{ getEstadoPagoText(pago.estado_pago) }}</td>

@@ -13,7 +13,7 @@
             <div class="mb-3">
               <label for="dni" class="form-label">DNI:</label>
               <input type="text" class="form-control" id="dni" formControlName="dni" placeholder="Ej. 73948467"
-                maxlength="8" />
+                maxlength="8" (input)="validateNumberInput($event, 'dni')" />
             </div>
             <div class="mb-3">
               <label for="direccion" class="form-label">Dirección:</label>
@@ -51,7 +51,7 @@
             <div class="mb-3">
               <label for="telefono" class="form-label">Telefono:</label>
               <input type="text" class="form-control" id="telefono" formControlName="telefono"
-                placeholder="Ej. 923579158" maxlength="9" />
+                placeholder="Ej. 923579158" maxlength="9" (input)="validateNumberInput($event, 'telefono')" />
             </div>
             <!-- Campos solo para Empleado -->
             <div *ngIf="esEmpleado">

@@ -129,7 +129,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let empleado of empleados">
+        <tr *ngFor="let empleado of empleados" [ngClass]="{'fila-inactiva': empleado.estado_persona === 0}">
           <td class="text-center">{{ empleado.dni }}</td>
           <td class="text-center">{{ empleado.nombres }}</td>
           <td class="text-center">{{ empleado.apellidos }}</td>
@@ -147,11 +147,20 @@
               <i class="bx bx-edit"></i>
             </button>
             <button
+              *ngIf="empleado.estado_persona !== 0"
               class="btn btn-link text-danger p-0"
               (click)="eliminarPersona(empleado)"
-              title="Eliminar"
+              title="Dar de baja"
             >
               <i class="bx bx-trash"></i>
+            </button>
+            <button
+              *ngIf="permisos.esAdmin() && empleado.estado_persona === 0"
+              class="btn btn-link text-success p-0"
+              (click)="reactivarPersona(empleado)"
+              title="Reactivar"
+            >
+              <i class="bx bx-refresh"></i>
             </button>
           </td>
         </tr>

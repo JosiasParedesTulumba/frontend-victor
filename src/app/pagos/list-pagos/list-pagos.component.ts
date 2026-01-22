@@ -141,4 +141,24 @@ export class ListPagosComponent implements OnInit {
   mostrarAcciones(): boolean {
     return !this.permisos.esSupervisor();
   }
+
+  tieneAjuste(pago: Pago): boolean {
+    return pago.monto_ajuste !== undefined && 
+           pago.monto_ajuste !== null && 
+           pago.monto_ajuste !== '0' && 
+           pago.monto_ajuste !== '0.00';
+  }
+
+  getAjusteFormateado(pago: Pago): string {
+    if (!this.tieneAjuste(pago)) return '-';
+    const ajuste = parseFloat(pago.monto_ajuste || '0');
+    const signo = ajuste >= 0 ? '+' : '';
+    return `${signo}$${Math.abs(ajuste).toFixed(2)}`;
+  }
+
+  getClaseAjuste(pago: Pago): string {
+    if (!this.tieneAjuste(pago)) return '';
+    const ajuste = parseFloat(pago.monto_ajuste || '0');
+    return ajuste >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
+  }
 }

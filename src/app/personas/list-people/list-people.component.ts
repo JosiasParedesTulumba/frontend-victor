@@ -3,6 +3,7 @@ import { PersonasService } from '../services/personas.service';
 import { Persona } from '../interfaces/persona.interface';
 import { AuthService } from '../../auth/services/auth.service';
 import { PermisosService } from '../../auth/services/permisos.service';
+import { forkJoin, of } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -40,10 +41,14 @@ export class ListPeopleComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.personasService.getPersonas().subscribe({
-      next: (personas) => {
-        // Mapear datos de API al formato que usa tu interfaz
-        this.personas = personas.map(p => ({
+    const personasActivas$ = this.personasService.getPersonas();
+    const empleadosInactivos$ = this.permisos.esAdmin()
+      ? this.personasService.getEmpleadosInactivos()
+      : of([]);
+
+    forkJoin([personasActivas$, empleadosInactivos$]).subscribe({
+      next: ([personasActivas, empleadosInactivos]) => {
+        const mapPersona = (p: any, estadoForzado?: number): Persona => ({
           dni: p.dni || '',
           nombres: p.nombre,
           apellidos: p.apellido,
@@ -53,14 +58,20 @@ export class ListPeopleComponent implements OnInit {
           tipoPersona: p.tipo_persona === 1 ? 'Cliente' : 'Empleado',
           // Campos de empleado si aplica
           nombreUsuario: p.usuario?.nombre_usuario || '',
-          contrasena: '', // No mostrar contraseña por seguridad
+          contrasena: '',
           puesto: p.puesto,
           rol: p.usuario?.rol?.nombre_rol || '',
           fechaRegistro: p.fecha_creacion || '',
           // Campos internos de la API
           persona_id: p.persona_id,
-          usuario_id: p.usuario?.usuario_id
-        }));
+          usuario_id: p.usuario?.usuario_id,
+          estado_persona: estadoForzado ?? p.estado_persona ?? 1,
+        });
+
+        const personasMapeadas = personasActivas.map(p => mapPersona(p));
+        const inactivosMapeados = (empleadosInactivos || []).map(p => mapPersona(p, 0));
+
+        this.personas = [...personasMapeadas, ...inactivosMapeados];
         this.isLoading = false;
       },
       error: (error) => {
@@ -88,6 +99,10 @@ export class ListPeopleComponent implements OnInit {
 
   get empleados(): Persona[] {
     let empleadosFiltrados = this.personas.filter(p => p.tipoPersona === 'Empleado');
+
+    if (!this.permisos.esAdmin()) {
+      empleadosFiltrados = empleadosFiltrados.filter(p => p.estado_persona !== 0);
+    }
 
     if (this.filtroRol) {
       empleadosFiltrados = empleadosFiltrados.filter(p =>
@@ -136,23 +151,51 @@ export class ListPeopleComponent implements OnInit {
 
     Swal.fire({
       title: '¿Estás seguro?',
-      text: `¿Deseas eliminar a ${persona.nombres} ${persona.apellidos}? Esta acción no se puede deshacer`,
+      text: `¿Deseas dar de baja a ${persona.nombres} ${persona.apellidos}? Podrás reactivarlo luego.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonText: 'Sí, dar de baja',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed && persona.persona_id) {
         this.personasService.eliminarPersona(persona.persona_id).subscribe({
           next: () => {
-            Swal.fire('¡Eliminado!', 'La persona ha sido eliminada.', 'success');
-            this.cargarPersonas(); // Recargar lista
+            Swal.fire('¡Actualizado!', 'La persona ha sido dada de baja.', 'success');
+            this.cargarPersonas();
           },
           error: (error) => {
             console.error('Error al eliminar persona:', error);
-            Swal.fire('Error', 'No se pudo eliminar la persona', 'error');
+            Swal.fire('Error', 'No se pudo dar de baja la persona', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  reactivarPersona(persona: Persona): void {
+    if (!persona.persona_id) return;
+
+    Swal.fire({
+      title: 'Reactivar empleado',
+      text: `¿Deseas reactivar a ${persona.nombres} ${persona.apellidos}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, reactivar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.personasService.reactivarPersona(persona.persona_id!).subscribe({
+          next: () => {
+            Swal.fire('¡Reactivado!', 'La persona ha sido reactivada.', 'success');
+            this.cargarPersonas();
+          },
+          error: (error) => {
+            console.error('Error al reactivar persona:', error);
+            Swal.fire('Error', 'No se pudo reactivar la persona', 'error');
           }
         });
       }

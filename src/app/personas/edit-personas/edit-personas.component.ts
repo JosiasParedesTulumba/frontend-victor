@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Persona } from '../interfaces/persona.interface';
 import { PersonasService } from '../services/personas.service';
 import { RolesService } from '../services/roles.service';
+import { PermisosService } from '../../auth/services/permisos.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -29,17 +30,22 @@ export class EditPersonasComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private personasService: PersonasService,
-    private rolesService: RolesService
+    private rolesService: RolesService,
+    private permisos: PermisosService
   ) { }
 
   ngOnInit(): void {
     this.initForm();
-    this.cargarRoles()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['persona'] && this.persona && this.personaForm) {
       this.llenarFormulario();
+    }
+    
+    // Solo cargar roles cuando el modal se abre
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
+      this.cargarRoles();
     }
   }
 
@@ -94,13 +100,22 @@ export class EditPersonasComponent implements OnInit, OnChanges {
   }
 
   cargarRoles(): void {
+    // Solo cargar roles si el usuario puede editar empleados
+    if (!this.permisos.esAdmin() && !this.permisos.esEmpleado()) {
+      this.roles = [];
+      return;
+    }
+
     this.rolesService.findAll().subscribe({
       next: (roles) => {
         this.roles = roles;
       },
       error: (error) => {
         console.error('Error al cargar roles:', error);
-        Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        // Solo mostrar error si el usuario necesita los roles
+        if (this.permisos.esAdmin() || this.permisos.esEmpleado()) {
+          Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        }
         this.roles = [
           { rol_id: 1, nombre_rol: 'ADMIN', estado_rol: 1 },
           { rol_id: 2, nombre_rol: 'EMPLEADO', estado_rol: 1 },

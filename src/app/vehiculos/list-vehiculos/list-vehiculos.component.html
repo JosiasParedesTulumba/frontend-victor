@@ -82,8 +82,12 @@
           </span>
         </td>
         <td class="text-center">
-          <span [ngClass]="vehiculo.estado === 'Activo' ? 'text-success' : 'text-danger'">
-            {{ vehiculo.estado }}
+          <span [ngClass]="{
+            'text-success': vehiculo.estadoActual === 'Disponible',
+            'text-warning': vehiculo.estadoActual === 'Reservado',
+            'text-danger': vehiculo.estadoActual === 'Ocupado'
+          }">
+            {{ vehiculo.estadoActual }}
           </span>
         </td>
         <td *ngIf="mostrarAcciones()" class="text-center">

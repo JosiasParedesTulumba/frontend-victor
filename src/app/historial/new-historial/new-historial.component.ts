@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HistorialService } from '../services/historial.service';
 import { VehiculosService } from '../../vehiculos/services/vehiculos.service';
@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
   templateUrl: './new-historial.component.html',
   styleUrl: './new-historial.component.css'
 })
-export class NewHistorialComponent implements OnInit {
+export class NewHistorialComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
   @Output() saveHistorial = new EventEmitter<any>();
@@ -32,7 +32,13 @@ export class NewHistorialComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
-    this.loadVehiculos();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Solo cargar vehículos cuando el modal se abre
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
+      this.loadVehiculos();
+    }
   }
 
   initForm() {
@@ -51,10 +57,12 @@ export class NewHistorialComponent implements OnInit {
     this.vehiculosService.getMatriculas().subscribe({
       next: (vehiculos) => {
         this.vehiculos = vehiculos;
+        this.error = '';
       },
       error: (error) => {
         console.error('Error al cargar vehículos:', error);
         this.error = 'Error al cargar la lista de vehículos';
+        // No mostrar SweetAlert aquí, solo en el error del componente
       }
     });
   }

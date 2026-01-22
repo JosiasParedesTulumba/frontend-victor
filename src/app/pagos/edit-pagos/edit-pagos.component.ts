@@ -81,14 +81,4 @@ export class EditPagosComponent implements OnInit, OnChanges {
       this.onClose();
     }
   }
-
-  getMetodoPagoText(metodo: number): string {
-    const metodos: { [key: number]: string } = {
-      1: 'Tarjeta',
-      2: 'Efectivo',
-      3: 'Transferencia',
-      4: 'Depósito'
-    };
-    return metodos[metodo] || 'Desconocido';
-  }
 }

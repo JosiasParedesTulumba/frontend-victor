@@ -21,3 +21,13 @@
   color: #223388;
   box-shadow: 0 2px 8px rgba(34,51,136,0.13);
 }
+
+.fila-inactiva,
+.fila-inactiva td {
+  background-color: #ffe6e6 !important;
+  color: #a94442;
+}
+
+.fila-inactiva:hover td {
+  background-color: #ffd9d9 !important;
+}

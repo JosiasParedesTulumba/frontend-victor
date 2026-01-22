@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PersonasService } from '../services/personas.service';
 import { Rol, RolesService } from '../services/roles.service';
@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
   templateUrl: './new-people.component.html',
   styleUrls: ['./new-people.component.css']
 })
-export class NewPeopleComponent implements OnInit {
+export class NewPeopleComponent implements OnInit, OnChanges {
 
   @Input() isOpen: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
@@ -36,12 +36,18 @@ export class NewPeopleComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.cargarRoles();
 
     if (this.permisos.esAdmin()) {
       this.tiposPersonaDisponibles = ['Cliente', 'Empleado'];
     } else {
       this.tiposPersonaDisponibles = ['Cliente'];
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Solo cargar roles cuando el modal se abre y el usuario puede crear empleados
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true && this.permisos.esAdmin()) {
+      this.cargarRoles();
     }
   }
 
@@ -79,13 +85,22 @@ export class NewPeopleComponent implements OnInit {
 
   // Cargar roles desde la API
   cargarRoles(): void {
+    // Solo cargar si el usuario puede crear empleados
+    if (!this.permisos.esAdmin()) {
+      this.roles = [];
+      return;
+    }
+
     this.rolService.findAll().subscribe({
       next: (roles) => {
         this.roles = roles;
       },
       error: (error) => {
         console.error('Error al cargar roles:', error);
-        Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        // Solo mostrar error si realmente necesita los roles
+        if (this.permisos.esAdmin()) {
+          Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        }
         // Roles de respaldo si falla la API
         this.roles = [
           { rol_id: 1, nombre_rol: 'ADMIN', estado_rol: 1 },
@@ -259,4 +274,15 @@ export class NewPeopleComponent implements OnInit {
   }
 
   tiposPersonaDisponibles: string[] = [];
+
+  validateNumberInput(event: any, controlName: string) {
+    const input = event.target;
+    const value = input.value;
+    const numericValue = value.replace(/[^0-9]/g, '');
+    
+    if (value !== numericValue) {
+      input.value = numericValue;
+      this.personaForm.get(controlName)?.setValue(numericValue);
+    }
+  }
 }

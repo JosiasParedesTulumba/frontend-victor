@@ -19,7 +19,7 @@ export class EditReservasComponent implements OnInit, OnChanges {
   mensajeError: string = '';
   isSubmitting: boolean = false;
 
-  constructor(private fb: FormBuilder, private reservasService: ReservasService) {}
+  constructor(private fb: FormBuilder, private reservasService: ReservasService) { }
 
   ngOnInit() {
     this.initForm();
@@ -58,7 +58,7 @@ export class EditReservasComponent implements OnInit, OnChanges {
 
   onSubmit() {
     this.mensajeError = '';
-    
+
     if (this.reservaForm.invalid) {
       this.mensajeError = 'Por favor complete todos los campos requeridos';
       return;
@@ -70,7 +70,7 @@ export class EditReservasComponent implements OnInit, OnChanges {
     }
 
     const formValue = this.reservaForm.getRawValue();
-    
+
     // Validar que la fecha de fin sea posterior a la fecha de inicio
     if (new Date(formValue.fechaFin) <= new Date(formValue.fechaInicio)) {
       this.mensajeError = 'La fecha de fin debe ser posterior a la fecha de inicio';
@@ -84,7 +84,7 @@ export class EditReservasComponent implements OnInit, OnChanges {
       fecha_fin: formValue.fechaFin,
       descripcion: formValue.descripcion
     };
-    
+
     this.reservasService.actualizarReserva(this.reserva.reserva_id, reservaData).subscribe({
       next: () => {
         Swal.fire({
@@ -98,14 +98,14 @@ export class EditReservasComponent implements OnInit, OnChanges {
       error: (error) => {
         console.error('Error al actualizar reserva:', error);
         this.isSubmitting = false;
-        
+
         let errorMessage = 'Error al actualizar la reserva';
         if (error.error?.message) {
           errorMessage = error.error.message;
         } else if (error.message) {
           errorMessage = error.message;
         }
-        
+
         Swal.fire({
           icon: 'error',
           title: 'Error',
